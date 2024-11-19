@@ -28,6 +28,10 @@ class Page1State extends AppState {
 
 }
 
+class BasketState extends AppState {
+  BasketState(super.id);
+}
+
 class HttpState extends AppState {
   final int responseCode;
   var errorMessage = '';
@@ -60,6 +64,10 @@ class Page1Event extends AppEvent {
 
 }
 
+class BasketEvent extends AppEvent {
+
+}
+
 class HttpEvent extends AppEvent {
   final String route;
   final Map<String, dynamic> data;
@@ -89,5 +97,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 class Page1Bloc extends Bloc<Page1Event, Page1State> {
   Page1Bloc(super.initialState) {
     on<Page1Event>((event, emit) => emit(Page1State(event.id)));
+  }
+}
+
+class BasketBloc extends Bloc<BasketEvent, BasketState> {
+  BasketBloc(super.initialState) {
+    on<BasketEvent>((event, emit) => emit(BasketState(event.id)));
   }
 }

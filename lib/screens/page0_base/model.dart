@@ -6,6 +6,7 @@ class AppModel {
   final part1 = DishPart1List();
   final part2 = DishPart2List();
   final dishes = DishList();
+  final basket = <Dish>[];
   DishPart2? filteredPart2;
 
   List<Dish> filteredDishes() {

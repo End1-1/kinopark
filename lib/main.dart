@@ -22,7 +22,8 @@ void main() {
   Hive.registerAdapter(DishAdapter());
   runApp(MultiBlocProvider(providers: [
     BlocProvider<AppBloc>(create: (_) => AppBloc(HttpState(0, const {}))),
-    BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(Page1State(0)))
+    BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(Page1State(0))),
+    BlocProvider<BasketBloc>(create: (_) => BasketBloc(BasketState(0))),
   ], child: const KinoparkApp()));
 }
 

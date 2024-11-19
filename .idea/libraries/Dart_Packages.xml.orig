@@ -12,7 +12,7 @@
         <entry key="_macros">
           <value>
             <list>
-              <option value="$PROJECT_DIR$/../../dev/flutter/bin/cache/dart-sdk/pkg/_macros/lib" />
+              <option value="$PROJECT_DIR$/../../soft/flutter/bin/cache/dart-sdk/pkg/_macros/lib" />
             </list>
           </value>
         </entry>
@@ -257,7 +257,7 @@
         <entry key="flutter_web_plugins">
           <value>
             <list>
-              <option value="$PROJECT_DIR$/../../dev/flutter/packages/flutter_web_plugins/lib" />
+              <option value="$PROJECT_DIR$/../../soft/flutter/packages/flutter_web_plugins/lib" />
             </list>
           </value>
         </entry>
@@ -843,16 +843,23 @@
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-14.2.5/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/watcher-1.1.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/web-1.1.0/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/web_socket-0.1.6/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/web_socket_channel-3.0.1/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.1.0/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.2/lib" />
-      <root url="file://$PROJECT_DIR$/../../dev/flutter/bin/cache/dart-sdk/pkg/_macros/lib" />
+<<<<<<< HEAD
       <root url="file://$PROJECT_DIR$/../../dev/flutter/bin/cache/pkg/sky_engine/lib" />
       <root url="file://$PROJECT_DIR$/../../dev/flutter/packages/flutter/lib" />
       <root url="file://$PROJECT_DIR$/../../dev/flutter/packages/flutter_localizations/lib" />
       <root url="file://$PROJECT_DIR$/../../dev/flutter/packages/flutter_test/lib" />
-      <root url="file://$PROJECT_DIR$/../../dev/flutter/packages/flutter_web_plugins/lib" />
+=======
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/web_socket-0.1.6/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/web_socket_channel-3.0.1/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.1.0/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.2/lib" />
+      <root url="file://$PROJECT_DIR$/../../soft/flutter/bin/cache/dart-sdk/pkg/_macros/lib" />
+      <root url="file://$PROJECT_DIR$/../../soft/flutter/bin/cache/pkg/sky_engine/lib" />
+      <root url="file://$PROJECT_DIR$/../../soft/flutter/packages/flutter/lib" />
+      <root url="file://$PROJECT_DIR$/../../soft/flutter/packages/flutter_localizations/lib" />
+      <root url="file://$PROJECT_DIR$/../../soft/flutter/packages/flutter_test/lib" />
+      <root url="file://$PROJECT_DIR$/../../soft/flutter/packages/flutter_web_plugins/lib" />
+>>>>>>> 90cc017268c62a8de2ee6e1216323da84cae0f56
     </CLASSES>
     <JAVADOC />
     <SOURCES />
