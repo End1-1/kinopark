@@ -1,3 +1,9 @@
 {
-  "login": "Login"
+  "login": "Login",
+  "retry": "Retry",
+  "checkInternet": "Check internet connection and try again",
+  "unauthorized": "Unauthorized",
+  "incorrectPin": "Incorrect pin",
+  "favorites": "Favorites",
+  "add": "Add"
 }
