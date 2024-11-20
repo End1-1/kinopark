@@ -18,7 +18,9 @@ class Dish extends HiveObject
     @HiveField(3) required String f_image,
     @HiveField(4) required String f_print1,
     @HiveField(5) required String f_print2,
-    @HiveField(6) required double f_price
+    @HiveField(6) required double f_price,
+    @HiveField(7) required double f_qty,
+    @HiveField(8) required double f_netweight
   }) = _Dish;
 
   factory Dish.fromJson(Map<String, dynamic> json) => _$DishFromJson(json);

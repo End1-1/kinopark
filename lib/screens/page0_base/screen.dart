@@ -16,7 +16,7 @@ abstract class App extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: appBar(context),
       body: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+        //minimum: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           child: Stack(children: [
        body(context)
       ]))

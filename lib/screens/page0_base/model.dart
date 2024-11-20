@@ -15,4 +15,12 @@ class AppModel {
     }
     return dishes.list.where((e) => e.f_part == filteredPart2!.f_id).toList();
   }
+
+  double basketTotal() {
+    var total = 0.0;
+    for (final d in basket) {
+      total += d.f_qty * d.f_price;
+    }
+    return total;
+  }
 }

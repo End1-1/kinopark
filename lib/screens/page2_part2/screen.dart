@@ -31,6 +31,7 @@ class Part2 extends App {
     return Row(children: [
       Expanded(
           child: Container(
+            margin: const EdgeInsets.fromLTRB(10, 5, 10, 0),
               decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   color: Colors.indigo),

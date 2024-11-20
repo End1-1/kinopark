@@ -5,5 +5,7 @@
   "unauthorized": "Unauthorized",
   "incorrectPin": "Incorrect pin",
   "favorites": "Favorites",
-  "add": "Add"
+  "add": "Add",
+  "g": "g",
+  "order": "Order"
 }
