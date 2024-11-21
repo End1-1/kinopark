@@ -7,8 +7,8 @@ extension Part2Ext on Part2 {
   }
 
   void _addToBasket(Dish d) {
-    model.basket.add(d.copyWith());
-    BlocProvider.of<BasketBloc>(tools.context()).add(BasketEvent());
+    model.addDishToBasket(d);
+
   }
 
   void _goToBasket() {

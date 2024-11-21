@@ -149,6 +149,7 @@ class _AppPage extends State<AppPage> {
       }
       final boxPart1 = await Hive.openBox<List>('part1');
       await boxPart1.put('part1list', _model.part1.list);
+      boxPart1.close();
       _model.part2.list.clear();
       for (final e in r2['part2']) {
         final part2 = DishPart2.fromJson(e);
@@ -156,6 +157,7 @@ class _AppPage extends State<AppPage> {
       }
       final boxPart2 = await Hive.openBox<List>('part2');
       await boxPart2.put('part2list', _model.part2.list);
+      boxPart2.close();
       _model.dishes.list.clear();
       for (final e in r2['menu']) {
         final dish = Dish.fromJson(e);
@@ -163,6 +165,7 @@ class _AppPage extends State<AppPage> {
       }
       final boxDishes = await Hive.openBox<List>('dish');
       await boxDishes.put('dish', _model.dishes.list);
+      boxDishes.close();
       tools.setInt('menuversion', newConfig);
     } else {
       final boxPart1 = await Hive.openBox<List>('part1');
@@ -175,6 +178,8 @@ class _AppPage extends State<AppPage> {
       _model.dishes.list =
           boxDishes.get('dish', defaultValue: [])?.cast<Dish>() ?? [];
     }
+    final basketBox = await Hive.openBox<List>('basket');
+    _model.basket.addAll( basketBox.get('basket', defaultValue: [])?.cast<Dish>() ?? []);
     return true;
   }
 
