@@ -37,12 +37,7 @@ class Basket extends App {
                         Expanded(
                             child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-<<<<<<< HEAD
-                                    backgroundColor: kMainColor),
-                                onPressed: () {},
-                                child: Text(
-                                    '${locale().order} ${tools.mdFormatDouble(model.basketTotal())} ֏')))
-=======
+
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                                     backgroundColor: kMainColor),
                                 onPressed: _paymentPage,
@@ -50,7 +45,7 @@ class Basket extends App {
                                     '${locale().next} ${tools.mdFormatDouble(model.basketTotal())} ֏',
                                     style:
                                         const TextStyle(color: Colors.white))))
->>>>>>> 0f812cad676a7ceb0e1a380aad952207f9d572fc
+
                       ]))
             ],
           );
