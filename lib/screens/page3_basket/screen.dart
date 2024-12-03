@@ -30,16 +30,18 @@ class Basket extends App {
                 ]
               ]))),
               Container(
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Expanded(child: OutlinedButton(
-
-                    style:
-                        OutlinedButton.styleFrom(backgroundColor: kMainColor),
-                    onPressed: () {},
-                    child: Text(
-                        '${locale().order} ${tools.mdFormatDouble(model.basketTotal())} ֏')))
-              ]))
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                            child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                    backgroundColor: kMainColor),
+                                onPressed: () {},
+                                child: Text(
+                                    '${locale().order} ${tools.mdFormatDouble(model.basketTotal())} ֏')))
+                      ]))
             ],
           );
         }));
