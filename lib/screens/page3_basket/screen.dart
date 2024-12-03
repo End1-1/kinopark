@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kinopark/screens/page0_base/model.dart';
 import 'package:kinopark/screens/page0_base/screen.dart';
-import 'package:kinopark/structs/dish.dart';
+import 'package:kinopark/screens/page4_payment/screen.dart';
 import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/app_bloc.dart';
@@ -30,16 +30,21 @@ class Basket extends App {
                 ]
               ]))),
               Container(
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Expanded(child: OutlinedButton(
-
-                    style:
-                        OutlinedButton.styleFrom(backgroundColor: kMainColor),
-                    onPressed: () {},
-                    child: Text(
-                        '${locale().order} ${tools.mdFormatDouble(model.basketTotal())} ֏')))
-              ]))
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                            child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                                    backgroundColor: kMainColor),
+                                onPressed: _paymentPage,
+                                child: Text(
+                                    '${locale().next} ${tools.mdFormatDouble(model.basketTotal())} ֏',
+                                    style:
+                                        const TextStyle(color: Colors.white))))
+                      ]))
             ],
           );
         }));
@@ -62,7 +67,7 @@ class BasketDishWidget extends StatelessWidget {
     final dish = model.basket[row];
     return Container(
       decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
           color: Colors.white),
       margin: const EdgeInsets.all(5),
       padding: const EdgeInsets.all(5),
@@ -70,7 +75,11 @@ class BasketDishWidget extends StatelessWidget {
         Row(children: [
           dish.f_image.isEmpty
               ? Image.asset('assets/fastfood.png', height: 90)
-              : Image.memory(base64Decode(dish.f_image), height: 90),
+              : ClipRRect(
+
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                  child: Image.memory(base64Decode(dish.f_image), height: 90),
+                  ),
           const SizedBox(width: 10),
           Expanded(
               child: Column(
@@ -91,7 +100,7 @@ class BasketDishWidget extends StatelessWidget {
           Container(
               decoration: const BoxDecoration(
                   color: Colors.black26,
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
               child: Row(children: [
                 IconButton(onPressed: _decQty, icon: const Icon(Icons.remove)),
                 BlocBuilder<BasketBloc, BasketState>(builder: (builder, state) {

@@ -67,7 +67,7 @@ class Part2 extends App {
            mainAxisAlignment: MainAxisAlignment.center,
              children: [ e.f_image.isEmpty
               ? Image.asset('assets/fastfood.png', height: 100)
-              : Image.memory(base64Decode(e.f_image))]),
+              : Image.memory(base64Decode(e.f_image), height: 100)]),
         Row(
             mainAxisAlignment: MainAxisAlignment.center, children: [Text('${tools.mdFormatDouble(e.f_price)} ֏')]),
           Container(

@@ -7,3 +7,5 @@ const basketQtyStyle = TextStyle(color: Colors.white, fontSize: 14, fontWeight: 
 const basketPriceStyle = TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w900);
 const basketWeightStyle = TextStyle(color: Colors.black38, fontSize: 14, fontWeight: FontWeight.w900);
 const basketNameStyle = TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.normal);
+const paymentTextStyle = TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold);
+const pageHeaderStyle = TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.normal);

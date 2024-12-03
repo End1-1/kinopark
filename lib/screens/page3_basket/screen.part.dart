@@ -1,5 +1,12 @@
 part of 'screen.dart';
 
+extension BasketExt on Basket {
+  void _paymentPage() {
+    Navigator.push(tools.context(), MaterialPageRoute(builder: (builder) => Payment(model)));
+  }
+
+}
+
 extension BasketDishWidgetExt on BasketDishWidget {
   void _incQty() {
     final dish = model.basket[row];
