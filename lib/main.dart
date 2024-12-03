@@ -48,20 +48,20 @@ class KinoparkApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('en'), Locale('hy'), Locale('ru')],
-      home: const AppPage(),
+      home: AppPage(),
     );
   }
 }
 
 class AppPage extends StatefulWidget {
-  const AppPage({super.key});
+  final _model = AppModel();
+  AppPage({super.key});
 
   @override
   State<AppPage> createState() => _AppPage();
 }
 
 class _AppPage extends State<AppPage> {
-  final _model = AppModel();
   late Future<Object> _loadingFunc;
   String? _pin;
 
@@ -89,7 +89,7 @@ class _AppPage extends State<AppPage> {
               }
               Future.microtask(() {
                 Navigator.pushReplacement(tools.context(),
-                    MaterialPageRoute(builder: (builder) => HomePage(_model)));
+                    MaterialPageRoute(builder: (builder) => HomePage(widget._model)));
               });
               return Container();
             }));
@@ -133,53 +133,54 @@ class _AppPage extends State<AppPage> {
 
   Future<Object> _loadApp() async {
     tools = await SharedPreferences.getInstance();
+    widget._model.init();
     if ((tools.getString('sessionkey') ?? '').isEmpty) {
       return Future.value({'needauth': true});
     }
     var r1 = await HttpDio().post('login.php', inData: {'method': 3});
     r1 = r1['data']['config']['f_config'];
     final oldConfig = tools.getInt('menuversion') ?? 0;
-    _model.part1.list.clear();
+    widget._model.part1.list.clear();
     int newConfig = int.tryParse(r1['menuversion']) ?? 0;
     if (oldConfig != newConfig) {
       var r2 = await HttpDio().post('kinopark/loadapp.php', inData: {});
       for (final e in r2['part1']) {
         final part1 = DishPart1.fromJson(e);
-        _model.part1.list.add(part1);
+        widget._model.part1.list.add(part1);
       }
       final boxPart1 = await Hive.openBox<List>('part1');
-      await boxPart1.put('part1list', _model.part1.list);
+      await boxPart1.put('part1list', widget._model.part1.list);
       boxPart1.close();
-      _model.part2.list.clear();
+      widget._model.part2.list.clear();
       for (final e in r2['part2']) {
         final part2 = DishPart2.fromJson(e);
-        _model.part2.list.add(part2);
+        widget._model.part2.list.add(part2);
       }
       final boxPart2 = await Hive.openBox<List>('part2');
-      await boxPart2.put('part2list', _model.part2.list);
+      await boxPart2.put('part2list', widget._model.part2.list);
       boxPart2.close();
-      _model.dishes.list.clear();
+      widget._model.dishes.list.clear();
       for (final e in r2['menu']) {
         final dish = Dish.fromJson(e);
-        _model.dishes.list.add(dish);
+        widget._model.dishes.list.add(dish);
       }
       final boxDishes = await Hive.openBox<List>('dish');
-      await boxDishes.put('dish', _model.dishes.list);
+      await boxDishes.put('dish', widget._model.dishes.list);
       boxDishes.close();
       tools.setInt('menuversion', newConfig);
     } else {
       final boxPart1 = await Hive.openBox<List>('part1');
       final boxPart2 = await Hive.openBox<List>('part2');
       final boxDishes = await Hive.openBox<List>('dish');
-      _model.part1.list =
+      widget._model.part1.list =
           boxPart1.get('part1list', defaultValue: [])?.cast<DishPart1>() ?? [];
-      _model.part2.list =
+      widget._model.part2.list =
           boxPart2.get('part2list', defaultValue: [])?.cast<DishPart2>() ?? [];
-      _model.dishes.list =
+      widget._model.dishes.list =
           boxDishes.get('dish', defaultValue: [])?.cast<Dish>() ?? [];
     }
     final basketBox = await Hive.openBox<List>('basket');
-    _model.basket.addAll( basketBox.get('basket', defaultValue: [])?.cast<Dish>() ?? []);
+    widget._model.basket.addAll( basketBox.get('basket', defaultValue: [])?.cast<Dish>() ?? []);
     return true;
   }
 

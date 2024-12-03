@@ -4,14 +4,30 @@ import 'package:kinopark/structs/dish.dart';
 import 'package:kinopark/structs/dishpart1.dart';
 import 'package:kinopark/structs/dishpart2.dart';
 import 'package:kinopark/tools/app_bloc.dart';
+import 'package:kinopark/tools/app_websocket.dart';
 import 'package:kinopark/tools/tools.dart';
 
 class AppModel {
+  static bool _isInit = false;
   final part1 = DishPart1List();
   final part2 = DishPart2List();
   final dishes = DishList();
   final basket = <Dish>[];
+  //1 - cash, 2 - card, 3 - idram
+  var paymentMethod = 0;
+  var additionalInfo = '';
   DishPart2? filteredPart2;
+  late final AppWebSocket webSocket;
+
+  AppModel();
+
+  void init() {
+    if (_isInit) {
+      return;
+    }
+    _isInit = true;
+    webSocket = AppWebSocket();
+  }
 
   List<Dish> filteredDishes() {
     if(filteredPart2 == null) {

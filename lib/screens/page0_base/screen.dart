@@ -35,4 +35,12 @@ abstract class App extends StatelessWidget {
   List<Widget> appBarActions(BuildContext context) {
     return [];
   }
+
+  Widget columnSpace() {
+    return const SizedBox(width: 10);
+  }
+
+  Widget rowSpace() {
+    return const SizedBox(height: 10);
+  }
 }
