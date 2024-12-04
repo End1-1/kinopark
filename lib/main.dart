@@ -14,17 +14,24 @@ import 'package:kinopark/tools/tools.dart';
 import 'package:kinopark/widgets/pin_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Hive.initFlutter();
+  await Hive.initFlutter();
   Hive.registerAdapter(DishPart1Adapter());
   Hive.registerAdapter(DishPart2Adapter());
   Hive.registerAdapter(DishAdapter());
-  runApp(MultiBlocProvider(providers: [
-    BlocProvider<AppBloc>(create: (_) => AppBloc(HttpState(0, const {}))),
-    BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(Page1State(0))),
-    BlocProvider<BasketBloc>(create: (_) => BasketBloc(BasketState(0))),
-  ], child: const KinoparkApp()));
+  final locale = await Hive.openBox('locale');
+  Tools.locale = locale.get('locale', defaultValue:  'hy');
+  runApp(MultiBlocProvider(
+      providers: [
+        BlocProvider<AppBloc>(create: (_) => AppBloc(HttpState(0, const {}))),
+        BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(Page1State(0))),
+        BlocProvider<BasketBloc>(create: (_) => BasketBloc(BasketState(0))),
+        BlocProvider<LocaleBloc>(create: (_) => LocaleBloc(LocaleState(0))),
+      ],
+      child: BlocBuilder<LocaleBloc, LocaleState>(builder: (builder, state) {
+        return KinoparkApp();
+      })));
 }
 
 class KinoparkApp extends StatelessWidget {
@@ -40,7 +47,7 @@ class KinoparkApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      locale: const Locale('hy'),
+      locale: Locale(Tools.locale),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -55,6 +62,7 @@ class KinoparkApp extends StatelessWidget {
 
 class AppPage extends StatefulWidget {
   final _model = AppModel();
+
   AppPage({super.key});
 
   @override
@@ -88,8 +96,10 @@ class _AppPage extends State<AppPage> {
                 }
               }
               Future.microtask(() {
-                Navigator.pushReplacement(tools.context(),
-                    MaterialPageRoute(builder: (builder) => HomePage(widget._model)));
+                Navigator.pushReplacement(
+                    tools.context(),
+                    MaterialPageRoute(
+                        builder: (builder) => HomePage(widget._model)));
               });
               return Container();
             }));
@@ -180,7 +190,8 @@ class _AppPage extends State<AppPage> {
           boxDishes.get('dish', defaultValue: [])?.cast<Dish>() ?? [];
     }
     final basketBox = await Hive.openBox<List>('basket');
-    widget._model.basket.addAll( basketBox.get('basket', defaultValue: [])?.cast<Dish>() ?? []);
+    widget._model.basket
+        .addAll(basketBox.get('basket', defaultValue: [])?.cast<Dish>() ?? []);
     return true;
   }
 

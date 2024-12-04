@@ -13,5 +13,7 @@
   "card": "Card",
   "idram": "Idram",
   "selectPaymentType": "Select payment type",
-  "additionalInfo": "Additional information"
+  "additionalInfo": "Additional information",
+  "yourBasketEmpty": "Your basket empty",
+  "selectPaymentMethod": "Please, select method of payment"
 }

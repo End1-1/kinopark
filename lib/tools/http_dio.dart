@@ -29,8 +29,12 @@ class HttpDio {
           print('reply size ${strData.length}');
           print(strData);
         }
-        final outData = jsonDecode(strData);
-        return outData;
+        try {
+          final outData = jsonDecode(strData);
+          return outData;
+        } catch (se) {
+          return strData;
+        }
       } catch (e) {
         return Future.error(e.toString());
       }

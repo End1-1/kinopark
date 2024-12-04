@@ -17,6 +17,11 @@ extension PaymentExt on Payment {
   }
 
   void _order() {
+    if (model.paymentMethod == 0) {
+      errorDialog(locale().selectPaymentType);
+      return;
+    }
     model.additionalInfo = _infoController.text;
+    model.createOrder();
   }
 }

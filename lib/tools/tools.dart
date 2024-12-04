@@ -7,6 +7,8 @@ final mdDoubleFormatter = NumberFormat.decimalPattern('en_us');
 
 extension Tools on SharedPreferences {
 
+  static String locale = 'hy';
+
   String serverName() {
     return 'kinopark.picasso.am';
   }

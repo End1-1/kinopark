@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kinopark/screens/page0_base/model.dart';
 
+import 'http_dio.dart';
+
 const hrIdle = -2;
 const hrFail = 0;
 const hrOk = 1;
@@ -24,12 +26,16 @@ class LoadingState extends AppState {
 }
 
 class Page1State extends AppState {
-  Page1State(super.id);
+  const Page1State(super.id);
 
 }
 
 class BasketState extends AppState {
-  BasketState(super.id);
+  const BasketState(super.id);
+}
+
+class LocaleState extends AppState {
+  const LocaleState(super.id);
 }
 
 class HttpState extends AppState {
@@ -68,6 +74,8 @@ class BasketEvent extends AppEvent {
 
 }
 
+class LocaleEvent extends AppEvent {}
+
 class HttpEvent extends AppEvent {
   final String route;
   final Map<String, dynamic> data;
@@ -82,15 +90,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   void _httpQuery(HttpEvent e) async {
     emit(LoadingState(e.id, true));
-    final dio = Dio();
-    final response =
-        await dio.post('/engine/kinopark/${e.route}', data: e.data);
-    emit(LoadingState(e.id, false));
-    if (response.statusCode == 200) {
-      emit(HttpState(e.id, response.data,
-          responseCode: response.statusCode ?? 0,
-          errorMessage: response.statusMessage ?? response.data));
+    try {
+      final response = await HttpDio().post(e.route, inData: e.data);
+
+      emit(LoadingState(e.id, false));
+
+    } catch (ex) {
+      emit(LoadingState(e.id, false));
     }
+
   }
 }
 
@@ -103,5 +111,11 @@ class Page1Bloc extends Bloc<Page1Event, Page1State> {
 class BasketBloc extends Bloc<BasketEvent, BasketState> {
   BasketBloc(super.initialState) {
     on<BasketEvent>((event, emit) => emit(BasketState(event.id)));
+  }
+}
+
+class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
+  LocaleBloc(super.initialState) {
+    on<LocaleEvent>((event, emit) => emit(LocaleState(event.id)));
   }
 }

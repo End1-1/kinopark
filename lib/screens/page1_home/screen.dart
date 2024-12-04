@@ -5,6 +5,7 @@ import 'package:kinopark/screens/page0_base/screen.dart';
 import 'package:kinopark/screens/page2_part2/screen.dart';
 import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
+import 'package:kinopark/tools/tools.dart';
 
 part 'screen.part.dart';
 
@@ -36,5 +37,11 @@ class HomePage extends App {
                     ])]))))
           ]
         ]);
+  }
+
+  List<Widget> appBarActions(BuildContext context) {
+    return [
+      languageButton()
+    ];
   }
 }

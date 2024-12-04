@@ -18,17 +18,25 @@ class Basket extends App {
   @override
   Widget body(BuildContext context) {
     return Container(
+      width: MediaQuery.sizeOf(context).width,
         decoration: const BoxDecoration(color: Colors.black12),
         child: BlocBuilder<BasketBloc, BasketState>(builder: (builder, state) {
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                   child: SingleChildScrollView(
-                      child: Column(children: [
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                        if (model.basket.isEmpty)
+                          _emptyBasket()
+                          else
                 for (int i = 0; i < model.basket.length; i++) ...[
                   BasketDishWidget(model: model, row: i, gSymbol: locale().g)
                 ]
               ]))),
+              if (model.basket.isNotEmpty)
               Container(
                   margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: Row(
@@ -48,6 +56,17 @@ class Basket extends App {
             ],
           );
         }));
+  }
+
+  Widget _emptyBasket() {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          rowSpace(),
+      Text(locale().yourBasketEmpty),
+      rowSpace(),
+      Image.asset('assets/smile.png', height: MediaQuery.sizeOf(tools.context()).width / 3, color: Colors.blueAccent,)
+    ]);
   }
 }
 

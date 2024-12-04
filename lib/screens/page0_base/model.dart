@@ -56,4 +56,16 @@ class AppModel {
     await basketBox.put('basket', basket);
     await basketBox.close();
   }
+
+  Future<void> createOrder() async {
+    final body = <String, dynamic> {};
+    final header = <String, dynamic>{};
+    header['state'] = 2;
+    header['table'] = tools.getInt("f_table");
+    header['comment'] = additionalInfo;
+    body['action'] = 'create';
+    body['header'] = header;
+    
+    BlocProvider.of<AppBloc>(tools.context()).add(HttpEvent('kinopark/create-order.php', body));
+  }
 }
