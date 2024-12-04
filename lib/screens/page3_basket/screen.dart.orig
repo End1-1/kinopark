@@ -18,25 +18,17 @@ class Basket extends App {
   @override
   Widget body(BuildContext context) {
     return Container(
-      width: MediaQuery.sizeOf(context).width,
         decoration: const BoxDecoration(color: Colors.black12),
         child: BlocBuilder<BasketBloc, BasketState>(builder: (builder, state) {
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                   child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                        if (model.basket.isEmpty)
-                          _emptyBasket()
-                          else
+                      child: Column(children: [
                 for (int i = 0; i < model.basket.length; i++) ...[
                   BasketDishWidget(model: model, row: i, gSymbol: locale().g)
                 ]
               ]))),
-              if (model.basket.isNotEmpty)
               Container(
                   margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: Row(
@@ -45,7 +37,12 @@ class Basket extends App {
                         Expanded(
                             child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-
+<<<<<<< HEAD
+                                    backgroundColor: kMainColor),
+                                onPressed: () {},
+                                child: Text(
+                                    '${locale().order} ${tools.mdFormatDouble(model.basketTotal())} ֏')))
+=======
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                                     backgroundColor: kMainColor),
                                 onPressed: _paymentPage,
@@ -53,22 +50,11 @@ class Basket extends App {
                                     '${locale().next} ${tools.mdFormatDouble(model.basketTotal())} ֏',
                                     style:
                                         const TextStyle(color: Colors.white))))
-
+>>>>>>> 0f812cad676a7ceb0e1a380aad952207f9d572fc
                       ]))
             ],
           );
         }));
-  }
-
-  Widget _emptyBasket() {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          rowSpace(),
-      Text(locale().yourBasketEmpty),
-      rowSpace(),
-      Image.asset('assets/smile.png', height: MediaQuery.sizeOf(tools.context()).width / 3, color: Colors.blueAccent,)
-    ]);
   }
 }
 
