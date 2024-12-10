@@ -33,7 +33,7 @@ class Basket extends App {
                           _emptyBasket()
                           else
                 for (int i = 0; i < model.basket.length; i++) ...[
-                  BasketDishWidget(model: model, row: i, gSymbol: locale().g)
+                  BasketDishWidget(imageWidget: image, model: model, row: i, gSymbol: locale().g)
                 ]
               ]))),
               if (model.basket.isNotEmpty)
@@ -54,7 +54,8 @@ class Basket extends App {
                                     style:
                                         const TextStyle(color: Colors.white))))
 
-                      ]))
+                      ])),
+              rowSpace()
             ],
           );
         }));
@@ -76,9 +77,11 @@ class BasketDishWidget extends StatelessWidget {
   final AppModel model;
   final int row;
   String gSymbol;
+  Function(String, double) imageWidget;
 
   BasketDishWidget(
       {super.key,
+        required this.imageWidget,
       required this.model,
       required this.row,
       required this.gSymbol});
@@ -99,7 +102,7 @@ class BasketDishWidget extends StatelessWidget {
               : ClipRRect(
 
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                  child: Image.memory(base64Decode(dish.f_image), height: 90),
+                  child: imageWidget(dish.f_image, 100),
                   ),
           const SizedBox(width: 10),
           Expanded(

@@ -1,8 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kinopark/screens/page0_base/model.dart';
 
 import 'http_dio.dart';
 
@@ -27,7 +25,6 @@ class LoadingState extends AppState {
 
 class Page1State extends AppState {
   const Page1State(super.id);
-
 }
 
 class BasketState extends AppState {
@@ -36,6 +33,12 @@ class BasketState extends AppState {
 
 class LocaleState extends AppState {
   const LocaleState(super.id);
+}
+
+class AppErrorState extends AppState {
+  final String errorString;
+  const AppErrorState(super.id, this.errorString);
+
 }
 
 class HttpState extends AppState {
@@ -64,17 +67,20 @@ class AppEvent extends Equatable {
 
   @override
   List<Object?> get props => [];
+
+  int newId() {
+    return ++_counter;
+  }
 }
 
-class Page1Event extends AppEvent {
+class Page1Event extends AppEvent {}
 
-}
-
-class BasketEvent extends AppEvent {
-
-}
+class BasketEvent extends AppEvent {}
 
 class LocaleEvent extends AppEvent {}
+
+class AppErrorEvent extends AppEvent {
+}
 
 class HttpEvent extends AppEvent {
   final String route;
@@ -83,8 +89,8 @@ class HttpEvent extends AppEvent {
   HttpEvent(this.route, this.data);
 }
 
-class AppBloc extends Bloc<AppEvent, AppState> {
-  AppBloc(super.initialState) {
+class HttpBloc extends Bloc<AppEvent, AppState> {
+  HttpBloc(super.initialState) {
     on<HttpEvent>((event, emit) => _httpQuery(event));
   }
 
@@ -92,13 +98,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     emit(LoadingState(e.id, true));
     try {
       final response = await HttpDio().post(e.route, inData: e.data);
-
       emit(LoadingState(e.id, false));
-
     } catch (ex) {
       emit(LoadingState(e.id, false));
+      emit(AppErrorState(e.newId(), ex.toString()));
     }
-
   }
 }
 
@@ -117,5 +121,11 @@ class BasketBloc extends Bloc<BasketEvent, BasketState> {
 class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
   LocaleBloc(super.initialState) {
     on<LocaleEvent>((event, emit) => emit(LocaleState(event.id)));
+  }
+}
+
+class AppErrorBloc extends Bloc<AppErrorEvent, AppErrorState> {
+  AppErrorBloc(super.initialState) {
+    on<AppErrorEvent>((event, emit) => emit(event.))
   }
 }

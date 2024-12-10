@@ -66,6 +66,6 @@ class AppModel {
     body['action'] = 'create';
     body['header'] = header;
     
-    BlocProvider.of<AppBloc>(tools.context()).add(HttpEvent('kinopark/create-order.php', body));
+    BlocProvider.of<HttpBloc>(tools.context()).add(HttpEvent('kinopark/create-order.php', body));
   }
 }

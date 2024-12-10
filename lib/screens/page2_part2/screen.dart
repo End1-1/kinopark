@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/tools.dart';
+import 'package:shimmer/shimmer.dart';
 
 part 'screen.part.dart';
 
@@ -67,7 +69,7 @@ class Part2 extends App {
            mainAxisAlignment: MainAxisAlignment.center,
              children: [ e.f_image.isEmpty
               ? Image.asset('assets/fastfood.png', height: 100)
-              : Image.memory(base64Decode(e.f_image), height: 100)]),
+              : image(e.f_image, 100)]),
         Row(
             mainAxisAlignment: MainAxisAlignment.center, children: [Text('${tools.mdFormatDouble(e.f_price)} ֏')]),
           Container(

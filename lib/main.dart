@@ -24,7 +24,7 @@ void main() async {
   Tools.locale = locale.get('locale', defaultValue:  'hy');
   runApp(MultiBlocProvider(
       providers: [
-        BlocProvider<AppBloc>(create: (_) => AppBloc(HttpState(0, const {}))),
+        BlocProvider<HttpBloc>(create: (_) => HttpBloc(HttpState(0, const {}))),
         BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(Page1State(0))),
         BlocProvider<BasketBloc>(create: (_) => BasketBloc(BasketState(0))),
         BlocProvider<LocaleBloc>(create: (_) => LocaleBloc(LocaleState(0))),
@@ -149,6 +149,8 @@ class _AppPage extends State<AppPage> {
     }
     var r1 = await HttpDio().post('login.php', inData: {'method': 3});
     r1 = r1['data']['config']['f_config'];
+    tools.setInt('hall', r1['hall']);
+    tools.setInt('table', r1['table']);
     final oldConfig = tools.getInt('menuversion') ?? 0;
     widget._model.part1.list.clear();
     int newConfig = int.tryParse(r1['menuversion']) ?? 0;
