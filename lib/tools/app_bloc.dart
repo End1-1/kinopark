@@ -39,6 +39,9 @@ class AppErrorState extends AppState {
   final String errorString;
   const AppErrorState(super.id, this.errorString);
 
+  @override
+  List<Object?> get props => [id, errorString];
+
 }
 
 class HttpState extends AppState {
@@ -80,6 +83,8 @@ class BasketEvent extends AppEvent {}
 class LocaleEvent extends AppEvent {}
 
 class AppErrorEvent extends AppEvent {
+  final String errorString;
+  AppErrorEvent(this.errorString);
 }
 
 class HttpEvent extends AppEvent {
@@ -126,6 +131,6 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
 
 class AppErrorBloc extends Bloc<AppErrorEvent, AppErrorState> {
   AppErrorBloc(super.initialState) {
-    on<AppErrorEvent>((event, emit) => emit(event.))
+    on<AppErrorEvent>((event, emit) => emit(AppErrorState(event.id, event.errorString)));
   }
 }

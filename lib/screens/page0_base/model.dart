@@ -57,6 +57,10 @@ class AppModel {
     await basketBox.close();
   }
 
+  void closeErrorDialog() {
+    BlocProvider.of<AppErrorBloc>(tools.context()).add(AppErrorEvent(''));
+  }
+
   Future<void> createOrder() async {
     final body = <String, dynamic> {};
     final header = <String, dynamic>{};

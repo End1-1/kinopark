@@ -13,7 +13,7 @@ part 'screen.part.dart';
 abstract class App extends StatelessWidget {
   final AppModel model;
 
-  App(this.model, {super.key});
+  const App(this.model, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +25,8 @@ abstract class App extends StatelessWidget {
           child: Stack(children: [
        body(context),
             BlocBuilder<AppErrorBloc, AppErrorState>(builder: (context, state) {
-              if (state is AppStateError) {
-                return errorDialog(state.text);
+              if (state.errorString.isNotEmpty ) {
+                return errorDialog(state.errorString);
               }
               return Container();
             }),
@@ -112,9 +112,11 @@ abstract class App extends StatelessWidget {
                                 MediaQuery.sizeOf(tools.context()).height *
                                     0.7),
                             child: SingleChildScrollView(
-                                child: Styling.textCenter(text))),
-                        columnSpace(),
-                        Styling.textButton(model.closeDialog, model.tr('Close'))
+                                child:Text(text,
+                                    maxLines: 10,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.black)))),
+                        TextButton(onPressed:  model.closeErrorDialog, child: Text( locale().close))
                       ],
                     ),
                   )

@@ -28,6 +28,7 @@ void main() async {
         BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(Page1State(0))),
         BlocProvider<BasketBloc>(create: (_) => BasketBloc(BasketState(0))),
         BlocProvider<LocaleBloc>(create: (_) => LocaleBloc(LocaleState(0))),
+        BlocProvider<AppErrorBloc>(create: (_) => AppErrorBloc(AppErrorState(0, '')))
       ],
       child: BlocBuilder<LocaleBloc, LocaleState>(builder: (builder, state) {
         return KinoparkApp();
