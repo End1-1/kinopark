@@ -7,5 +7,18 @@
   "favorites": "Ընտրյալներ",
   "add": "Ավելացնել",
   "g": "գ",
-  "order": "Պատվիրել"
+  "order": "Պատվիրել",
+  "next": "Հաջորդ",
+  "cash": "Կանխիկ",
+  "card": "Քարտ",
+  "idram": "Idram",
+  "selectPaymentType": "Նշեք վճարման եղանանկը",
+  "additionalInfo": "Լրացուցիչ տեղեկություն",
+  "yourBasketEmpty": "Ձեր զամբյուղը դատարկ է",
+  "selectPaymentMethod": "Նշեք վճարման եղանանկը",
+  "close": "Փակել",
+  "yes": "Այո",
+  "no": "Ոչ",
+  "cancel": "Փակել",
+  "clearBasket": "Մաքրել՞ զամբյուղը"
 }

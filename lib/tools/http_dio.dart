@@ -12,6 +12,7 @@ class HttpDio {
   Future<dynamic> post(String route,
       {Map<String, dynamic> inData = const {}}) async {
     inData.addAll({'sessionkey': tools.getString('sessionkey')});
+    inData['sessionid'] = 1;
     try {
       if (kDebugMode) {
         print('request: https://${tools.serverName()}/engine/$route');
@@ -33,7 +34,7 @@ class HttpDio {
           final outData = jsonDecode(strData);
           return outData;
         } catch (se) {
-          return strData;
+          return Future.error(strData);
         }
       } catch (e) {
         return Future.error(e.toString());

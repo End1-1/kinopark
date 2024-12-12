@@ -127,4 +127,8 @@ class Payment extends App {
                           const TextStyle(color: Colors.white))))
             ]));
   }
+
+  List<Widget> appBarActions(BuildContext context) {
+    return [IconButton(onPressed: model.clearBasket, icon: Icon(Icons.delete_forever))];
+  }
 }

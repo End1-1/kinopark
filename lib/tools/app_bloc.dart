@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kinopark/tools/tools.dart';
 
 import 'http_dio.dart';
 
@@ -21,6 +22,8 @@ class LoadingState extends AppState {
   final bool isLoading;
 
   const LoadingState(super.id, this.isLoading);
+  @override
+  List<Object?> get props => [id, isLoading];
 }
 
 class Page1State extends AppState {
@@ -42,6 +45,17 @@ class AppErrorState extends AppState {
   @override
   List<Object?> get props => [id, errorString];
 
+}
+
+class AppQuestionState extends AppState {
+  final String questionString;
+  final VoidCallback funcYes;
+  final VoidCallback? funcNo;
+
+  const AppQuestionState(super.id, this.questionString, this.funcYes, this.funcNo);
+
+  @override
+  List<Object?> get props => [id, questionString];
 }
 
 class HttpState extends AppState {
@@ -76,6 +90,11 @@ class AppEvent extends Equatable {
   }
 }
 
+class LoadingEvent extends AppEvent {
+  final bool isLoading;
+  LoadingEvent(this.isLoading);
+}
+
 class Page1Event extends AppEvent {}
 
 class BasketEvent extends AppEvent {}
@@ -87,11 +106,24 @@ class AppErrorEvent extends AppEvent {
   AppErrorEvent(this.errorString);
 }
 
+class AppQuestionEvent extends AppEvent{
+  final String questionString;
+  final VoidCallback funcYes;
+  final VoidCallback? funcNo;
+  AppQuestionEvent(this.questionString, this.funcYes, this.funcNo);
+}
+
 class HttpEvent extends AppEvent {
   final String route;
   final Map<String, dynamic> data;
 
   HttpEvent(this.route, this.data);
+}
+
+class AppLoadingBloc extends Bloc<LoadingEvent, LoadingState> {
+  AppLoadingBloc(super.initialState) {
+    on<LoadingEvent>((event, emit) => emit(LoadingState(event.id, event.isLoading)));
+  }
 }
 
 class HttpBloc extends Bloc<AppEvent, AppState> {
@@ -100,13 +132,13 @@ class HttpBloc extends Bloc<AppEvent, AppState> {
   }
 
   void _httpQuery(HttpEvent e) async {
-    emit(LoadingState(e.id, true));
+    BlocProvider.of<AppLoadingBloc>(tools.context()).add(LoadingEvent(true));
     try {
       final response = await HttpDio().post(e.route, inData: e.data);
-      emit(LoadingState(e.id, false));
+      BlocProvider.of<AppLoadingBloc>(tools.context()).add(LoadingEvent(false));
     } catch (ex) {
-      emit(LoadingState(e.id, false));
-      emit(AppErrorState(e.newId(), ex.toString()));
+      BlocProvider.of<AppLoadingBloc>(tools.context()).add(LoadingEvent(false));
+      BlocProvider.of<AppErrorBloc>(tools.context()).add(AppErrorEvent(ex.toString()));
     }
   }
 }
@@ -132,5 +164,11 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
 class AppErrorBloc extends Bloc<AppErrorEvent, AppErrorState> {
   AppErrorBloc(super.initialState) {
     on<AppErrorEvent>((event, emit) => emit(AppErrorState(event.id, event.errorString)));
+  }
+}
+
+class AppQuestionBloc extends Bloc<AppQuestionEvent, AppQuestionState> {
+  AppQuestionBloc(super.initialState) {
+    on<AppQuestionEvent>((event, emit) => emit(AppQuestionState(event.id, event.questionString, event.funcYes, event.funcNo)));
   }
 }

@@ -16,5 +16,9 @@
   "additionalInfo": "Additional information",
   "yourBasketEmpty": "Your basket empty",
   "selectPaymentMethod": "Please, select method of payment",
-  "close": "Close"
+  "close": "Close",
+  "yes": "Yes",
+  "no": "No",
+  "cancel": "Cancel",
+  "clearBasket": "Clear basket?"
 }

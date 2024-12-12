@@ -26,14 +26,18 @@ extension AppExt on App {
     _saveLocale();
   }
 
-  void errorDialog(String text) {
-    showDialog(
-        context: tools.context(), builder: (builder) {
-      return
-      AlertDialog(
-        icon: Image.asset('assets/kinopark.png', height: 30), content: Text(text, textAlign: TextAlign.center), actions: [
-          TextButton(onPressed: (){Navigator.pop(tools.context());}, child: Text('Ok'))
-      ],);
-    });
+  void showError(String text) {
+    BlocProvider.of<AppErrorBloc>(tools.context()).add(AppErrorEvent(text));
   }
+
+  // void errorDialog(String text) {
+  //   showDialog(
+  //       context: tools.context(), builder: (builder) {
+  //     return
+  //     AlertDialog(
+  //       icon: Image.asset('assets/kinopark.png', height: 30), content: Text(text, textAlign: TextAlign.center), actions: [
+  //         TextButton(onPressed: (){Navigator.pop(tools.context());}, child: Text('Ok'))
+  //     ],);
+  //   });
+  // }
 }

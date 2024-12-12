@@ -30,6 +30,12 @@ abstract class App extends StatelessWidget {
               }
               return Container();
             }),
+            BlocBuilder<AppQuestionBloc, AppQuestionState>(builder: (builder, state) {
+              return state.questionString.isEmpty  ? Container() : questionDialog(state.questionString, state.funcYes, state.funcNo);
+            }),
+            BlocBuilder<AppLoadingBloc, LoadingState>(builder: (builder, state) {
+              return state.isLoading ? _loadingWidget() : Container();
+            })
       ]))
     );
   }
@@ -121,5 +127,58 @@ abstract class App extends StatelessWidget {
                     ),
                   )
                 ])));
+  }
+
+  Widget questionDialog(String text, VoidCallback ifYes, VoidCallback? ifNo) {
+    return Container(
+        color: Colors.black26,
+        child: Center(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                    color: Colors.white,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.question_answer_outlined,
+                          color: Colors.green,
+                        ),
+                        columnSpace(),
+                        Container(
+                            constraints: BoxConstraints(
+                                maxHeight:
+                                MediaQuery.sizeOf(tools.context()).height *
+                                    0.7),
+                            child: SingleChildScrollView(
+                                child: Text(text, textAlign: TextAlign.center))),
+                        columnSpace(),
+                        Row(mainAxisSize: MainAxisSize.min, children: [
+                          TextButton(onPressed: () {
+    model.closeQuestionDialog();
+    ifYes();
+    }      , child: Text(locale().yes)),
+                         TextButton(onPressed: () {
+                            model.closeQuestionDialog();
+                            if (ifNo != null) {
+                              ifNo!();
+                            }
+                          }, child: Text( locale().no))
+                        ])
+                      ],
+                    ),
+                  )
+                ])));
+  }
+
+  Widget _loadingWidget() {
+    return Container(
+        color: Colors.black26,
+        child: Center(
+            child: CircularProgressIndicator()));
   }
 }

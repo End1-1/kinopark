@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -12,11 +14,13 @@ import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/http_dio.dart';
 import 'package:kinopark/tools/tools.dart';
 import 'package:kinopark/widgets/pin_form.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
+  final directory = await getApplicationSupportDirectory();
+  await Hive.initFlutter(directory.path);
   Hive.registerAdapter(DishPart1Adapter());
   Hive.registerAdapter(DishPart2Adapter());
   Hive.registerAdapter(DishAdapter());
@@ -25,10 +29,12 @@ void main() async {
   runApp(MultiBlocProvider(
       providers: [
         BlocProvider<HttpBloc>(create: (_) => HttpBloc(HttpState(0, const {}))),
-        BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(Page1State(0))),
-        BlocProvider<BasketBloc>(create: (_) => BasketBloc(BasketState(0))),
-        BlocProvider<LocaleBloc>(create: (_) => LocaleBloc(LocaleState(0))),
-        BlocProvider<AppErrorBloc>(create: (_) => AppErrorBloc(AppErrorState(0, '')))
+        BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(const Page1State(0))),
+        BlocProvider<BasketBloc>(create: (_) => BasketBloc(const BasketState(0))),
+        BlocProvider<LocaleBloc>(create: (_) => LocaleBloc(const LocaleState(0))),
+        BlocProvider<AppErrorBloc>(create: (_) => AppErrorBloc(const AppErrorState(0, ''))),
+        BlocProvider<AppQuestionBloc>(create: (_) => AppQuestionBloc(AppQuestionState(0, '', (){}, null))),
+        BlocProvider<AppLoadingBloc>(create: (_) => AppLoadingBloc(LoadingState(0, false)))
       ],
       child: BlocBuilder<LocaleBloc, LocaleState>(builder: (builder, state) {
         return KinoparkApp();
@@ -36,7 +42,7 @@ void main() async {
 }
 
 class KinoparkApp extends StatelessWidget {
-  const KinoparkApp({super.key});
+  KinoparkApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -48,6 +54,7 @@ class KinoparkApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
+      debugShowCheckedModeBanner: false,
       locale: Locale(Tools.locale),
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -182,15 +189,25 @@ class _AppPage extends State<AppPage> {
       boxDishes.close();
       tools.setInt('menuversion', newConfig);
     } else {
-      final boxPart1 = await Hive.openBox<List>('part1');
-      final boxPart2 = await Hive.openBox<List>('part2');
-      final boxDishes = await Hive.openBox<List>('dish');
-      widget._model.part1.list =
-          boxPart1.get('part1list', defaultValue: [])?.cast<DishPart1>() ?? [];
-      widget._model.part2.list =
-          boxPart2.get('part2list', defaultValue: [])?.cast<DishPart2>() ?? [];
-      widget._model.dishes.list =
-          boxDishes.get('dish', defaultValue: [])?.cast<Dish>() ?? [];
+      try {
+        final boxPart1 = await Hive.openBox<List>('part1');
+        final boxPart2 = await Hive.openBox<List>('part2');
+        final boxDishes = await Hive.openBox<List>('dish');
+        widget._model.part1.list =
+            boxPart1.get('part1list', defaultValue: [])?.cast<DishPart1>() ??
+                [];
+        widget._model.part2.list =
+            boxPart2.get('part2list', defaultValue: [])?.cast<DishPart2>() ??
+                [];
+        widget._model.dishes.list =
+            boxDishes.get('dish', defaultValue: [])?.cast<Dish>() ?? [];
+      } catch (e) {
+        final directory = await getApplicationSupportDirectory();
+        final hiveDir = Directory(directory.path);
+        await hiveDir.delete(recursive: true);
+        tools.setInt('menuversion', -1);
+        return await _loadApp();
+      }
     }
     final basketBox = await Hive.openBox<List>('basket');
     widget._model.basket

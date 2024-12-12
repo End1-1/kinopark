@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +8,6 @@ import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/tools.dart';
-import 'package:shimmer/shimmer.dart';
 
 part 'screen.part.dart';
 
@@ -110,7 +106,11 @@ class Part2 extends App {
               scrollDirection: Axis.horizontal,
               child: Row(children: [
                 for (final e in model.part2.get(part1)) ...[
-                  Container(
+                  InkWell(
+                      onTap: () {
+                        _filterDishes(e.f_id);
+                      },
+                      child:Container(
                       decoration: const BoxDecoration(
                           color: kMainColor,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -118,11 +118,7 @@ class Part2 extends App {
                       margin: const EdgeInsets.all(5),
                       padding: const EdgeInsets.all(5),
                       height: 60,
-                      child: InkWell(
-                          onTap: () {
-                            _filterDishes(e.f_id);
-                          },
-                          child: Text(
+                      child:  Text(
                             e.f_name,
                             style: part2style,
                           )))
