@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kinopark/tools/tools.dart';
+import 'package:kinopark/widgets/app_menu.dart';
 
 import 'http_dio.dart';
 
@@ -35,7 +36,11 @@ class BasketState extends AppState {
 }
 
 class LocaleState extends AppState {
-  const LocaleState(super.id);
+  final String locale;
+  const LocaleState(super.id, this.locale);
+
+  @override
+  List<Object?> get props => [id, locale];
 }
 
 class AppErrorState extends AppState {
@@ -80,10 +85,13 @@ class AppEvent extends Equatable {
 
   AppEvent() {
     id = ++_counter;
+    if (kDebugMode) {
+      print('NEW EVENT ID: $id');
+    }
   }
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [id];
 
   int newId() {
     return ++_counter;
@@ -99,7 +107,12 @@ class Page1Event extends AppEvent {}
 
 class BasketEvent extends AppEvent {}
 
-class LocaleEvent extends AppEvent {}
+class LocaleEvent extends AppEvent {
+  final String locale;
+  LocaleEvent(this.locale);
+  @override
+  List<Object?> get props => [id, locale];
+}
 
 class AppErrorEvent extends AppEvent {
   final String errorString;
@@ -116,8 +129,9 @@ class AppQuestionEvent extends AppEvent{
 class HttpEvent extends AppEvent {
   final String route;
   final Map<String, dynamic> data;
+  final Function? callback;
 
-  HttpEvent(this.route, this.data);
+  HttpEvent(this.route, this.data, {required this.callback});
 }
 
 class AppLoadingBloc extends Bloc<LoadingEvent, LoadingState> {
@@ -136,6 +150,9 @@ class HttpBloc extends Bloc<AppEvent, AppState> {
     try {
       final response = await HttpDio().post(e.route, inData: e.data);
       BlocProvider.of<AppLoadingBloc>(tools.context()).add(LoadingEvent(false));
+      if (e.callback != null) {
+        e.callback!();
+      }
     } catch (ex) {
       BlocProvider.of<AppLoadingBloc>(tools.context()).add(LoadingEvent(false));
       BlocProvider.of<AppErrorBloc>(tools.context()).add(AppErrorEvent(ex.toString()));
@@ -157,7 +174,7 @@ class BasketBloc extends Bloc<BasketEvent, BasketState> {
 
 class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
   LocaleBloc(super.initialState) {
-    on<LocaleEvent>((event, emit) => emit(LocaleState(event.id)));
+    on<LocaleEvent>((event, emit) => emit(LocaleState(event.id, event.locale)));
   }
 }
 
@@ -172,3 +189,4 @@ class AppQuestionBloc extends Bloc<AppQuestionEvent, AppQuestionState> {
     on<AppQuestionEvent>((event, emit) => emit(AppQuestionState(event.id, event.questionString, event.funcYes, event.funcNo)));
   }
 }
+

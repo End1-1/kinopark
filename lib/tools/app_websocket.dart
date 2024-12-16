@@ -74,7 +74,7 @@ class AppWebSocket {
   }
 
   void _reconnect() {
-    Future.delayed(const Duration(seconds: 5)).then((_) {
+    Future.delayed(const Duration(seconds: 2)).then((_) {
       _connect();
     });
   }

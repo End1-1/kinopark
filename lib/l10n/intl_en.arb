@@ -20,5 +20,19 @@
   "yes": "Yes",
   "no": "No",
   "cancel": "Cancel",
-  "clearBasket": "Clear basket?"
+  "clearBasket": "Clear basket?",
+  "support": "Support",
+  "pleaseComeHere": "Please, come closer",
+  "yourMessage": "Your message",
+  "yourMessageWasSent": "Your message was sent",
+  "yourOrderCreated": "Your order was created",
+  "logout": "Logout",
+  "areYouSureToLogout": "Are you sure to logout",
+  "searchDish": "Search dish",
+  "counted": "Counted",
+  "serviceFee": "Service fee",
+  "deliveryFee": "Delivery",
+  "goToPayment": "Go to payment",
+  "searchResult": "Search result",
+  "goto": "Go to"
 }

@@ -22,10 +22,23 @@ class Dish extends HiveObject
     @HiveField(7) required double f_qty,
     @HiveField(8) required double f_netweight,
     @HiveField(9) required int f_store,
-    @HiveField(10) required String? f_comment
+    @HiveField(10) required String? f_comment,
+    @HiveField(11) required String? f_en,
+    @HiveField(12) required String? f_ru,
   }) = _Dish;
 
   factory Dish.fromJson(Map<String, dynamic> json) => _$DishFromJson(json);
+
+  String name(String locale) {
+    switch (locale) {
+      case 'en':
+        return f_en ?? f_name;
+      case 'ru':
+        return f_ru ?? f_name;
+      default:
+        return f_name;
+    }
+  }
 }
 
 class DishList {

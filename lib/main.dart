@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -11,13 +12,17 @@ import 'package:kinopark/structs/dish.dart';
 import 'package:kinopark/structs/dishpart1.dart';
 import 'package:kinopark/structs/dishpart2.dart';
 import 'package:kinopark/tools/app_bloc.dart';
+import 'package:kinopark/tools/app_cubit.dart';
 import 'package:kinopark/tools/http_dio.dart';
 import 'package:kinopark/tools/tools.dart';
+import 'package:kinopark/widgets/app_menu.dart';
 import 'package:kinopark/widgets/pin_form.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
+  //debugPaintSizeEnabled = true;
   WidgetsFlutterBinding.ensureInitialized();
   final directory = await getApplicationSupportDirectory();
   await Hive.initFlutter(directory.path);
@@ -25,51 +30,54 @@ void main() async {
   Hive.registerAdapter(DishPart2Adapter());
   Hive.registerAdapter(DishAdapter());
   final locale = await Hive.openBox('locale');
-  Tools.locale = locale.get('locale', defaultValue:  'hy');
-  runApp(MultiBlocProvider(
-      providers: [
-        BlocProvider<HttpBloc>(create: (_) => HttpBloc(HttpState(0, const {}))),
-        BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(const Page1State(0))),
-        BlocProvider<BasketBloc>(create: (_) => BasketBloc(const BasketState(0))),
-        BlocProvider<LocaleBloc>(create: (_) => LocaleBloc(const LocaleState(0))),
-        BlocProvider<AppErrorBloc>(create: (_) => AppErrorBloc(const AppErrorState(0, ''))),
-        BlocProvider<AppQuestionBloc>(create: (_) => AppQuestionBloc(AppQuestionState(0, '', (){}, null))),
-        BlocProvider<AppLoadingBloc>(create: (_) => AppLoadingBloc(LoadingState(0, false)))
-      ],
-      child: BlocBuilder<LocaleBloc, LocaleState>(builder: (builder, state) {
-        return KinoparkApp();
-      })));
+  Tools.locale = locale.get('locale', defaultValue: 'hy');
+  runApp(MultiBlocProvider(providers: [
+    BlocProvider<HttpBloc>(create: (_) => HttpBloc(HttpState(0, const {}))),
+    BlocProvider<Page1Bloc>(create: (_) => Page1Bloc(const Page1State(0))),
+    BlocProvider<BasketBloc>(create: (_) => BasketBloc(const BasketState(0))),
+    BlocProvider<LocaleBloc>(
+        create: (_) => LocaleBloc(LocaleState(0, Tools.locale))),
+    BlocProvider<AppErrorBloc>(
+        create: (_) => AppErrorBloc(const AppErrorState(0, ''))),
+    BlocProvider<AppQuestionBloc>(
+        create: (_) => AppQuestionBloc(AppQuestionState(0, '', () {}, null))),
+    BlocProvider<AppLoadingBloc>(
+        create: (_) => AppLoadingBloc(LoadingState(0, false))),
+    BlocProvider<AppMenuCubit>(create: (_) => AppMenuCubit()),
+    BlocProvider<AppSearchTitleCubit>(create: (_) => AppSearchTitleCubit(''))
+  ], child: KinoparkApp()));
 }
 
 class KinoparkApp extends StatelessWidget {
   KinoparkApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-        useMaterial3: true,
-      ),
-      debugShowCheckedModeBanner: false,
-      locale: Locale(Tools.locale),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('en'), Locale('hy'), Locale('ru')],
-      home: AppPage(),
-    );
+    return BlocBuilder<LocaleBloc, LocaleState>(builder: (builder, state) {
+      navigatorKey = GlobalKey<NavigatorState>();
+      return MaterialApp(
+          navigatorKey: navigatorKey,
+          title: 'Picasso',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+            useMaterial3: true,
+          ),
+          debugShowCheckedModeBanner: false,
+          locale: Locale(Tools.locale),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en'), Locale('hy'), Locale('ru')],
+          home: AppPage());
+    });
   }
 }
 
 class AppPage extends StatefulWidget {
-  final _model = AppModel();
+  final model = AppModel();
 
   AppPage({super.key});
 
@@ -95,6 +103,12 @@ class _AppPage extends State<AppPage> {
                 return _preloadingLogo();
               }
               if (snapshot.hasError) {
+                if (snapshot.error
+                    .toString()
+                    .toLowerCase()
+                    .contains('invalid session key')) {
+                  return _authWidget();
+                }
                 return _errorWidget(snapshot.error.toString());
               }
               if (snapshot.data is Map) {
@@ -107,7 +121,7 @@ class _AppPage extends State<AppPage> {
                 Navigator.pushReplacement(
                     tools.context(),
                     MaterialPageRoute(
-                        builder: (builder) => HomePage(widget._model)));
+                        builder: (builder) => HomePage(widget.model)));
               });
               return Container();
             }));
@@ -151,41 +165,54 @@ class _AppPage extends State<AppPage> {
 
   Future<Object> _loadApp() async {
     tools = await SharedPreferences.getInstance();
-    widget._model.init();
+    final packageInfo = await PackageInfo.fromPlatform();
+    String appName = packageInfo.appName;
+    //String packageName = packageInfo.packageName;
+    String version = packageInfo.version;
+    String buildNumber = packageInfo.buildNumber;
+    tools.setString('app_version', '$version.$buildNumber');
+    widget.model.init();
     if ((tools.getString('sessionkey') ?? '').isEmpty) {
       return Future.value({'needauth': true});
     }
     var r1 = await HttpDio().post('login.php', inData: {'method': 3});
+    final userinfo = r1['data']['user'];
+    tools.setString('last', userinfo['f_last']);
+    tools.setString('first', userinfo['f_first']);
     r1 = r1['data']['config']['f_config'];
     tools.setInt('hall', r1['hall']);
     tools.setInt('table', r1['table']);
+    tools.setInt('chatoperatoruserid', r1['chatoperatoruserid'] ?? 0);
+    tools.setDouble('servicefee', r1['servicefactor'] ?? 0.0);
+    tools.setBool('debugmode', r1['debugmode'] ?? false);
     final oldConfig = tools.getInt('menuversion') ?? 0;
-    widget._model.part1.list.clear();
+    widget.model.part1.list.clear();
     int newConfig = int.tryParse(r1['menuversion']) ?? 0;
     if (oldConfig != newConfig) {
+      await Hive.deleteBoxFromDisk('basket');
       var r2 = await HttpDio().post('kinopark/loadapp.php', inData: {});
       for (final e in r2['part1']) {
         final part1 = DishPart1.fromJson(e);
-        widget._model.part1.list.add(part1);
+        widget.model.part1.list.add(part1);
       }
       final boxPart1 = await Hive.openBox<List>('part1');
-      await boxPart1.put('part1list', widget._model.part1.list);
+      await boxPart1.put('part1list', widget.model.part1.list);
       boxPart1.close();
-      widget._model.part2.list.clear();
+      widget.model.part2.list.clear();
       for (final e in r2['part2']) {
         final part2 = DishPart2.fromJson(e);
-        widget._model.part2.list.add(part2);
+        widget.model.part2.list.add(part2);
       }
       final boxPart2 = await Hive.openBox<List>('part2');
-      await boxPart2.put('part2list', widget._model.part2.list);
+      await boxPart2.put('part2list', widget.model.part2.list);
       boxPart2.close();
-      widget._model.dishes.list.clear();
+      widget.model.dishes.list.clear();
       for (final e in r2['menu']) {
         final dish = Dish.fromJson(e);
-        widget._model.dishes.list.add(dish);
+        widget.model.dishes.list.add(dish);
       }
       final boxDishes = await Hive.openBox<List>('dish');
-      await boxDishes.put('dish', widget._model.dishes.list);
+      await boxDishes.put('dish', widget.model.dishes.list);
       boxDishes.close();
       tools.setInt('menuversion', newConfig);
     } else {
@@ -193,13 +220,13 @@ class _AppPage extends State<AppPage> {
         final boxPart1 = await Hive.openBox<List>('part1');
         final boxPart2 = await Hive.openBox<List>('part2');
         final boxDishes = await Hive.openBox<List>('dish');
-        widget._model.part1.list =
+        widget.model.part1.list =
             boxPart1.get('part1list', defaultValue: [])?.cast<DishPart1>() ??
                 [];
-        widget._model.part2.list =
+        widget.model.part2.list =
             boxPart2.get('part2list', defaultValue: [])?.cast<DishPart2>() ??
                 [];
-        widget._model.dishes.list =
+        widget.model.dishes.list =
             boxDishes.get('dish', defaultValue: [])?.cast<Dish>() ?? [];
       } catch (e) {
         final directory = await getApplicationSupportDirectory();
@@ -210,7 +237,7 @@ class _AppPage extends State<AppPage> {
       }
     }
     final basketBox = await Hive.openBox<List>('basket');
-    widget._model.basket
+    widget.model.basket
         .addAll(basketBox.get('basket', defaultValue: [])?.cast<Dish>() ?? []);
     return true;
   }

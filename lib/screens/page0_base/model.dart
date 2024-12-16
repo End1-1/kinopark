@@ -1,17 +1,19 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
+import 'package:kinopark/screens/page1_home/screen.dart';
 import 'package:kinopark/structs/dish.dart';
+import 'package:kinopark/structs/dish_search_result.dart';
 import 'package:kinopark/structs/dishpart1.dart';
 import 'package:kinopark/structs/dishpart2.dart';
 import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/app_websocket.dart';
 import 'package:kinopark/tools/tools.dart';
-import 'package:uuid/uuid.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AppModel {
-  static bool _isInit = false;
+  var _isInit = false;
   final part1 = DishPart1List();
   final part2 = DishPart2List();
   final dishes = DishList();
@@ -21,9 +23,14 @@ class AppModel {
   var paymentMethod = 0;
   var additionalInfo = '';
   DishPart2? filteredPart2;
+  final searchResult = <DishSearchStruct>[];
   late final AppWebSocket webSocket;
 
-  AppModel();
+  AppModel() {
+    if (kDebugMode) {
+      print('NEW APPMODEL');
+    }
+  }
 
   void init() {
     if (_isInit) {
@@ -65,12 +72,15 @@ class AppModel {
   }
 
   void closeQuestionDialog() {
-    BlocProvider.of<AppQuestionBloc>(tools.context()).add(AppQuestionEvent('', (){}, (){}));
+    BlocProvider.of<AppQuestionBloc>(tools.context())
+        .add(AppQuestionEvent('', () {}, () {}));
   }
 
   void clearBasket() {
-    BlocProvider.of<AppQuestionBloc>(tools.context()).add(AppQuestionEvent(locale().clearBasket, (){
+    BlocProvider.of<AppQuestionBloc>(tools.context())
+        .add(AppQuestionEvent(locale().clearBasket, () {
       basket.clear();
+      BlocProvider.of<BasketBloc>(tools.context()).add(BasketEvent());
     }, null));
   }
 
@@ -81,15 +91,20 @@ class AppModel {
   Future<void> createOrder() async {
     final body = <String, dynamic>{};
     final header = <String, dynamic>{};
+    final serviceFeeValue = tools.getDouble('servicefee') ?? 0;
+    final serviceFeeAmount = basketTotal() * serviceFeeValue;
+    final totalAmount = basketTotal() + serviceFeeAmount;
     header['state'] = 2;
     header['hall'] = tools.getInt('hall');
     header['table'] = tools.getInt('table');
     header['comment'] = additionalInfo;
-    header['amounttotal'] = basketTotal();
-    header['amountcash'] = paymentMethod == 1 ? basketTotal() : 0;
-    header['amountcard'] = paymentMethod == 2 ? basketTotal() : 0;
-    header['amountidram'] = paymentMethod == 3 ? basketTotal() : 0;
+    header['amounttotal'] = totalAmount;
+    header['amountcash'] = paymentMethod == 1 ? totalAmount : 0;
+    header['amountcard'] = paymentMethod == 2 ? totalAmount : 0;
+    header['amountidram'] = paymentMethod == 3 ? totalAmount : 0;
     header['amountother'] = 0;
+    header["servicefactor"] = serviceFeeValue;
+    header["amountservice"] = serviceFeeAmount;
     header['amountdiscount'] = 0;
     header['discountfactor'] = 0;
     header['partner'] = 0;
@@ -112,8 +127,8 @@ class AppModel {
         'service': 0,
         'discount': 0,
         'store': e.f_store,
-        'print1': e.f_print1,
-        'print2': e.f_print2,
+        'print1': (tools.getBool('debugmode') ?? false) ? 'tester' : e.f_print1,
+        'print2': (tools.getBool('debugmode') ?? false) ? '' : e.f_print2,
         'comment': e.f_comment,
         'remind': 1,
         'adgcode': '???',
@@ -125,7 +140,16 @@ class AppModel {
       });
     }
 
-    BlocProvider.of<HttpBloc>(tools.context())
-        .add(HttpEvent('kinopark/create-order.php', body));
+    BlocProvider.of<HttpBloc>(tools.context()).add(
+        HttpEvent('kinopark/create-order.php', body, callback: _orderCreated));
+  }
+
+  void _orderCreated() {
+    basket.clear();
+    paymentMethod = 0;
+    BlocProvider.of<AppErrorBloc>(tools.context())
+        .add(AppErrorEvent(locale().yourOrderCreated));
+    Navigator.pushAndRemoveUntil(tools.context(),
+        MaterialPageRoute(builder: (_) => HomePage(this)), (_) => false);
   }
 }

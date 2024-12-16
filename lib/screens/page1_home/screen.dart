@@ -1,11 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kinopark/screens/page0_base/screen.dart';
 import 'package:kinopark/screens/page2_part2/screen.dart';
 import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/tools.dart';
-import 'package:shimmer/shimmer.dart';
 
 part 'screen.part.dart';
 
@@ -22,6 +20,8 @@ class HomePage extends App {
             Expanded(
                 child: InkWell(
                     onTap: () {
+                      model.filteredPart2 = null;
+                      model.searchResult.clear();
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -49,6 +49,36 @@ class HomePage extends App {
   }
 
   List<Widget> appBarActions(BuildContext context) {
-    return [languageButton()];
+    return [
+      PopupMenuButton(
+        icon: Icon(Icons.more_vert),
+        itemBuilder: (builder) {
+          return [
+           username(),
+            PopupMenuItem(
+              child: ListTile(
+                leading: Image.asset(
+                  'assets/flags/${Tools.locale}.png',
+                  height: 30,
+                ),
+                title: Text(localeName()),
+                onTap: () {
+                  Navigator.pop(context);  // Закрыть меню
+                  showMenu(
+                    context: context,
+                    position: const RelativeRect.fromLTRB(100, 100, 0, 0),
+                    items: popupMenuLanguageItems(),
+                  );
+                },
+              ),
+            ),
+            PopupMenuItem(
+              onTap: navigateToSendMessage,
+              child: ListTile(leading: Icon(Icons.help_outline), title: Text( locale().support)),
+            ),
+            logoutButton()
+          ];
+        }),
+    ];
   }
 }

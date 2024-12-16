@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kinopark/styles/styles.dart';
+import 'package:kinopark/tools/tools.dart';
 
 class PinForm extends StatefulWidget {
   final Function(String?) pinOk;
@@ -139,8 +140,11 @@ class _PinFormState extends State<PinForm> {
                           borderRadius: BorderRadius.all(Radius.circular(5))),
                       child: const Text('OK'))),
               Expanded(child: Container()),
+
             ],
-          )
+          ),
+          Expanded(child: Container()),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(tools.getString('app_version') ?? '?')])
         ]));
   }
 

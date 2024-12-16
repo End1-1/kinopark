@@ -1,12 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kinopark/screens/page0_base/screen.dart';
 import 'package:kinopark/structs/payment_type.dart';
 import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
-import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/tools.dart';
 
 part 'screen.part.dart';
@@ -128,7 +126,5 @@ class Payment extends App {
             ]));
   }
 
-  List<Widget> appBarActions(BuildContext context) {
-    return [IconButton(onPressed: model.clearBasket, icon: Icon(Icons.delete_forever))];
-  }
+
 }

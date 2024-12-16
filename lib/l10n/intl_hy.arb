@@ -20,5 +20,19 @@
   "yes": "Այո",
   "no": "Ոչ",
   "cancel": "Փակել",
-  "clearBasket": "Մաքրել՞ զամբյուղը"
+  "clearBasket": "Մաքրել՞ զամբյուղը",
+  "support": "Աջակցություն",
+  "pleaseComeHere": "Խնդրում եմ մոտենալ",
+  "yourMessage": "Ձեր հաղորդագրությունը",
+  "yourMessageWasSent": "Ձեր հաղորդագրությունը ուղարկված է",
+  "yourOrderCreated": "Ձեր տապվերը ընդունված է",
+  "logout": "Ելք",
+  "areYouSureToLogout": "Դուրս գալ՞",
+  "searchDish": "Փնտրել ուտեստները",
+  "counted": "Ընդամենը",
+  "serviceFee": "Սպասարկում",
+  "deliveryFee": "Առաքում",
+  "goToPayment": "Անցնել վճարմանը",
+  "searchResult": "Փնտրելու արձյունքները",
+  "goto": "Անցնել"
 }
