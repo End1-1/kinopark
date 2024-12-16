@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:kinopark/screens/page0_base/model.dart';
+import 'package:kinopark/screens/page3_basket/screen.dart';
 import 'package:kinopark/screens/page5_sendmessage/screen.dart';
 import 'package:kinopark/structs/dish.dart';
 import 'package:kinopark/structs/dish_search_result.dart';
@@ -79,9 +80,9 @@ abstract class App extends StatelessWidget {
   Widget appBarSearch(BuildContext context) {
     var width = MediaQuery.sizeOf(tools.context()).width;
     width = width > 500 ? 400 : width * 0.5;
-    return Container(
+    return Expanded(child: Container(
         constraints:
-            BoxConstraints(maxWidth: width, maxHeight: kToolbarHeight * 0.9),
+            BoxConstraints(maxHeight: kToolbarHeight * 0.9),
         decoration: const BoxDecoration(
             color: Colors.white,
             border: Border.fromBorderSide(BorderSide(color: Colors.yellow)),
@@ -102,7 +103,12 @@ abstract class App extends StatelessWidget {
                       hintText: locale().searchDish,
                       border:
                           OutlineInputBorder(borderSide: BorderSide.none)))),
-          Container(
+          InkWell(onTap: (){_searchTextController.clear();}, child: Container(
+            height: kToolbarHeight * 0.9,
+            width: 40,
+              child: Icon(Icons.clear)
+          )),
+        InkWell(onTap: (){_submitSearch( _searchTextController.text);}, child:Container(
               height: kToolbarHeight * 0.9,
               width: 40,
               margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -111,8 +117,8 @@ abstract class App extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(30),
                       bottomRight: Radius.circular(30))),
-              child: Icon(Icons.search))
-        ]));
+              child: Icon(Icons.search)))
+        ])));
   }
 
   OverlayEntry _createOverlay() {
@@ -216,6 +222,39 @@ abstract class App extends StatelessWidget {
 
   Widget rowSpace() {
     return const SizedBox(height: 10);
+  }
+
+  Widget basketButton() {
+    return IconButton(
+        onPressed: goToBasket,
+        icon: BlocBuilder<BasketBloc, BasketState>(builder: (builder, state) {
+          return SizedBox(
+              width: 32,
+              height: 32,
+              child: Stack(alignment: Alignment.center, children: [
+                const Icon(Icons.shopping_basket_outlined),
+                model.basket.isEmpty
+                    ? Container()
+                    : Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                        width: 16,
+                        height: 16,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Text(
+                            model.basket.isEmpty
+                                ? ''
+                                : '${model.basket.length}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 9,
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold))))
+              ]));
+        }));
   }
 
   Widget languageButton() {

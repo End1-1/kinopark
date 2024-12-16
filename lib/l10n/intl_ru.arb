@@ -34,5 +34,6 @@
   "deliveryFee": "Доставка",
   "goToPayment": "Перейти к оплате",
   "searchResult": "Результаты поиска",
-  "goto": "Перейти"
+  "goto": "Перейти",
+  "noPermissionForThisAction": "Невозможно выполнить команду"
 }

@@ -12,7 +12,5 @@ extension Part2Ext on Part2 {
 
   }
 
-  void _goToBasket() {
-    Navigator.push(tools.context(), MaterialPageRoute(builder: (builder) => Basket(model)));
-  }
+
 }

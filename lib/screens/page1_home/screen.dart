@@ -50,6 +50,7 @@ class HomePage extends App {
 
   List<Widget> appBarActions(BuildContext context) {
     return [
+      basketButton(),
       PopupMenuButton(
         icon: Icon(Icons.more_vert),
         itemBuilder: (builder) {

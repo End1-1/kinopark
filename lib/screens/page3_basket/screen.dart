@@ -41,18 +41,23 @@ class Basket extends App {
               if (model.basket.isNotEmpty)...[
                 Container(
                     margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: Row(
+                    child: Column(children:[Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                              '${locale().counted}  ${tools.mdFormatDouble(model.basketTotal())} ֏', style: totalTextStyle),
-                          columnSpace(),
-                          if ((tools.getDouble('servicefee') ?? 0) > 0)
-                            Text(
-                                '+${locale().serviceFee} ${tools.mdFormatDouble((tools.getDouble('servicefee') ?? 0) * 100)}% ${tools.mdFormatDouble(model.basketTotal() * (tools.getDouble('servicefee') ?? 0))} ֏',
-                            style: totalTextStyle),
-                          columnSpace(),
-                          Expanded(
+                         Expanded(child: Text(
+                              '${locale().counted}  ${tools.mdFormatDouble(model.basketTotal())} ֏', style: totalTextStyle)),
+                          ]),
+                          rowSpace(),
+                          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                            if ((tools.getDouble('servicefee') ?? 0) > 0)
+                              Expanded(child: Text(
+                                  '${locale().serviceFee} +${tools.mdFormatDouble((tools.getDouble('servicefee') ?? 0) * 100)}% ${tools.mdFormatDouble(model.basketTotal() * (tools.getDouble('servicefee') ?? 0))} ֏',
+                                  style: totalTextStyle))
+                          ]),
+                          rowSpace(),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [Expanded(
                               child: OutlinedButton(
                                   style: OutlinedButton.styleFrom(
                                       shape: RoundedRectangleBorder(
@@ -62,8 +67,9 @@ class Basket extends App {
                                   onPressed: _paymentPage,
                                   child: Text(
                                       '${locale().goToPayment} ${tools.mdFormatDouble(model.basketTotal() + model.basketTotal() * (tools.getDouble('servicefee') ?? 0))} ֏',
-                                      style:totalTextStyle)))
-                        ]))],
+                                      style:totalTextStyle)))])
+                        ])
+                )],
               rowSpace()
             ],
           );

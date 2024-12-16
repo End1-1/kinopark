@@ -120,6 +120,10 @@ extension AppExt on App {
     BlocProvider.of<AppErrorBloc>(tools.context()).add(AppErrorEvent(text));
   }
 
+  void goToBasket() {
+    Navigator.push(tools.context(), MaterialPageRoute(builder: (builder) => Basket(model)));
+  }
+
   void navigateToSendMessage() {
     Navigator.push(
         tools.context(), MaterialPageRoute(builder: (_) => SendMessage(model)));
@@ -128,6 +132,10 @@ extension AppExt on App {
   void _navigateToLogin() {}
 
   void _logout() {
+    if (tools.getBool('denylogout') ?? false) {
+      BlocProvider.of<AppErrorBloc>(tools.context()).add(AppErrorEvent(locale().noPermissionForThisAction));
+      return;
+    }
     BlocProvider.of<AppQuestionBloc>(tools.context())
         .add(AppQuestionEvent(locale().areYouSureToLogout, () {
       tools.setString('sessionkey', '');

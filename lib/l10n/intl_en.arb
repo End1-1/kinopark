@@ -34,5 +34,6 @@
   "deliveryFee": "Delivery",
   "goToPayment": "Go to payment",
   "searchResult": "Search result",
-  "goto": "Go to"
+  "goto": "Go to",
+  "noPermissionForThisAction": "No permission for this action"
 }

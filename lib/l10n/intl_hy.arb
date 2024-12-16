@@ -34,5 +34,6 @@
   "deliveryFee": "Առաքում",
   "goToPayment": "Անցնել վճարմանը",
   "searchResult": "Փնտրելու արձյունքները",
-  "goto": "Անցնել"
+  "goto": "Անցնել",
+  "noPermissionForThisAction": "Հնարավոր չէ կատարել ձեր հրահանգը"
 }

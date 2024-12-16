@@ -40,7 +40,9 @@ class Part2 extends App {
 
   @override
   Widget? appBarTitle(BuildContext context) {
-    return Row(children: [Expanded(child: Container()), appBarSearch(context), Expanded(child: Container())]);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+        children: [  appBarSearch(context)]);
   }
 
   Widget _topOfDishes() {
@@ -196,36 +198,7 @@ class Part2 extends App {
   @override
   List<Widget> appBarActions(BuildContext context) {
     return [
-      IconButton(
-          onPressed: _goToBasket,
-          icon: BlocBuilder<BasketBloc, BasketState>(builder: (builder, state) {
-            return SizedBox(
-                width: 32,
-                height: 32,
-                child: Stack(alignment: Alignment.center, children: [
-                  const Icon(Icons.shopping_basket_outlined),
-                  model.basket.isEmpty
-                      ? Container()
-                      : Align(
-                          alignment: Alignment.topRight,
-                          child: Container(
-                              width: 16,
-                              height: 16,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Text(
-                                  model.basket.isEmpty
-                                      ? ''
-                                      : '${model.basket.length}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      fontSize: 9,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold))))
-                ]));
-          })),
+      basketButton(),
       PopupMenuButton(
           icon: Icon(Icons.more_vert),
           itemBuilder: (builder) {
