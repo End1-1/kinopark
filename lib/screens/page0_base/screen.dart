@@ -22,17 +22,9 @@ part 'screen.part.dart';
 
 abstract class App extends StatelessWidget {
   final AppModel model;
-  final _searchTextController = TextEditingController();
-  final _searchFocus = FocusNode();
-  var _isSuggestionTap = false;
-  late BuildContext _overlayContext;
-  OverlayEntry? _overlayEntry;
-  final GlobalKey _textFieldKey = GlobalKey();
-  final _searchResult = <DishSearchStruct>[];
 
-  App(this.model, {super.key}) {
-    _searchFocus.addListener(_searchFocusChanged);
-  }
+
+  App(this.model, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,137 +67,6 @@ abstract class App extends StatelessWidget {
 
   Widget? appBarTitle(BuildContext context) {
     return null;
-  }
-
-  Widget appBarSearch(BuildContext context) {
-    var width = MediaQuery.sizeOf(tools.context()).width;
-    width = width > 500 ? 400 : width * 0.5;
-    return Expanded(child: Container(
-        constraints:
-            BoxConstraints(maxHeight: kToolbarHeight * 0.9),
-        decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border.fromBorderSide(BorderSide(color: Colors.yellow)),
-            borderRadius: BorderRadius.all(Radius.circular(30))),
-        child: Row(children: [
-          Expanded(
-              child: TextFormField(
-                  autofocus: true,
-                  key: _textFieldKey,
-                  controller: _searchTextController,
-                  textInputAction: TextInputAction.search,
-                  onFieldSubmitted: _submitSearch,
-                  onChanged: (text) {
-                    _searchSuggestDish(text, context);
-                  },
-                  focusNode: _searchFocus,
-                  decoration: InputDecoration(
-                      hintText: locale().searchDish,
-                      border:
-                          OutlineInputBorder(borderSide: BorderSide.none)))),
-          InkWell(onTap: (){_searchTextController.clear();}, child: Container(
-            height: kToolbarHeight * 0.9,
-            width: 40,
-              child: Icon(Icons.clear)
-          )),
-        InkWell(onTap: (){_submitSearch( _searchTextController.text);}, child:Container(
-              height: kToolbarHeight * 0.9,
-              width: 40,
-              margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              decoration: const BoxDecoration(
-                  color: Colors.yellow,
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(30),
-                      bottomRight: Radius.circular(30))),
-              child: Icon(Icons.search)))
-        ])));
-  }
-
-  OverlayEntry _createOverlay() {
-    RenderBox renderBox =
-        _textFieldKey.currentContext!.findRenderObject() as RenderBox;
-    var position = renderBox.localToGlobal(Offset.zero);
-    var width = renderBox.size.width;
-
-    return OverlayEntry(
-      builder: (context) => Positioned(
-        top: position.dy + renderBox.size.height,
-        left: position.dx,
-        width: width,
-        child: Material(
-          elevation: 5,
-          color: Colors.white,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.yellow,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8)],
-            ),
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(
-                    _searchResult.length,
-                    (index) => InkWell(
-                        onTap: () {
-                          _isSuggestionTap = true;
-                          _searchTextController.text =
-                              _searchResult[index].name;
-                          _removeOverlay();
-                          if (_searchResult[index].mode == 2) {
-                            final part2 = model.part2.list.firstWhere(
-                                (e) => e.f_id == _searchResult[index].id,
-                                orElse: () => DishPart2(f_id: 0, f_part: 0, f_name: '', f_en: '', f_ru: '', f_image: ''));
-                            if (part2.f_id > 0) {
-                              tools
-                                  .context()
-                                  .read<AppSearchTitleCubit>()
-                                  .emit(part2.name(Tools.locale));
-                              model.filteredPart2 = part2;
-                              BlocProvider.of<Page1Bloc>(tools.context()).add(Page1Event());
-                              return;
-                            }
-                          }
-                          if (_searchResult[index].mode == 1) {
-                            tools
-                                .context()
-                                .read<AppSearchTitleCubit>()
-                                .emit('${locale().searchResult} "${_searchTextController.text}"');
-                            final dish = model.dishes.list.firstWhere((e) =>
-                            e.f_id == _searchResult[index].id, orElse: () =>
-                                Dish(f_id: 0,
-                                    f_part: 0,
-                                    f_name: '',
-                                    f_image: '',
-                                    f_print1: '',
-                                    f_print2: '',
-                                    f_price: 0,
-                                    f_qty: 0,
-                                    f_netweight: 0,
-                                    f_store: 0,
-                                    f_comment: '',
-                                    f_en: '',
-                                    f_ru: ''));
-                            if (dish.f_id > 0) {
-                              model.filteredPart2 = null;
-                              model.searchResult.clear();
-                              model.searchResult.add(_searchResult[index]);
-                              BlocProvider.of<Page1Bloc>(tools.context()).add(Page1Event());
-                            }
-                          }
-                        },
-                        mouseCursor: SystemMouseCursors.click,
-                        child: Row(children: [
-                          Expanded(
-                              child: Container(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                  color: Colors.white,
-                                  child: Text(_searchResult[index].name)))
-                        ])))),
-          ),
-        ),
-      ),
-    );
   }
 
   List<Widget> appBarActions(BuildContext context) {

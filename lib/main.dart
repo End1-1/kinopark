@@ -185,6 +185,7 @@ class _AppPage extends State<AppPage> {
     tools.setInt('chatoperatoruserid', r1['chatoperatoruserid'] ?? 0);
     tools.setDouble('servicefee', r1['servicefactor'] ?? 0.0);
     tools.setBool('debugmode', r1['debugmode'] ?? false);
+    tools.setBool('denylogout', r1['denylogout'] ?? false);
     final oldConfig = tools.getInt('menuversion') ?? 0;
     widget.model.part1.list.clear();
     int newConfig = int.tryParse(r1['menuversion']) ?? 0;
