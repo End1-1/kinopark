@@ -59,7 +59,7 @@ class _AppMenu extends State<AppMenu> {
                   },
                   child: Container(
                     color: HSLColor.fromColor(kMainColor).withLightness(HSLColor.fromColor(kMainColor).lightness * 0.5).toColor(),
-                    child: Column(
+                    child: SingleChildScrollView(child:  Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -68,7 +68,7 @@ class _AppMenu extends State<AppMenu> {
                           w,
                         ]
                       ],
-                    ),
+                    )),
                   )))
         ],
       );

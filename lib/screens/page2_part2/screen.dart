@@ -48,6 +48,7 @@ class Part2 extends App {
               _filterDishes(e.f_id);
             },
             child: Container(
+              height: 30,
                 margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
                 child: Text(e.name(Tools.locale), style: appMenuItemStyle)))
       ]
