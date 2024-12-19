@@ -35,6 +35,10 @@ extension Part2Ext on Part2 {
     if (_overlayEntry != null) {
       _removeOverlay();
     }
+    if (text.isEmpty) {
+      tools.context().read<AppSearchTitleCubit>().emit('');
+      return;
+    }
 
     final msg = <String, dynamic>{
       'command': 'search_text',

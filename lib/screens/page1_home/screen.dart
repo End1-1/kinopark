@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kinopark/screens/page0_base/screen.dart';
 import 'package:kinopark/screens/page2_part2/screen.dart';
 import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
+import 'package:kinopark/tools/app_cubit.dart';
 import 'package:kinopark/tools/tools.dart';
 
 part 'screen.part.dart';
@@ -22,6 +24,7 @@ class HomePage extends App {
                     onTap: () {
                       model.filteredPart2 = null;
                       model.searchResult.clear();
+                      tools.context().read<AppSearchTitleCubit>().emit('');
                       Navigator.push(
                           context,
                           MaterialPageRoute(

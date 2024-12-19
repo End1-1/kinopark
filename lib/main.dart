@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -15,7 +14,6 @@ import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/app_cubit.dart';
 import 'package:kinopark/tools/http_dio.dart';
 import 'package:kinopark/tools/tools.dart';
-import 'package:kinopark/widgets/app_menu.dart';
 import 'package:kinopark/widgets/pin_form.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';

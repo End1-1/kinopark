@@ -26,9 +26,10 @@ class Basket extends App {
                   child: SingleChildScrollView(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                     if (model.basket.isEmpty)
-                      _emptyBasket()
+                       _emptyBasket()
                     else
                       for (int i = 0; i < model.basket.length; i++) ...[
                         BasketDishWidget(
@@ -113,7 +114,9 @@ class Basket extends App {
   }
 
   Widget _emptyBasket() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
       rowSpace(),
       Text(locale().yourBasketEmpty),
       rowSpace(),
