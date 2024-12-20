@@ -2,8 +2,13 @@ part of 'screen.dart';
 
 extension AppExt on App {
 
-  AppLocalizations locale() {
-    return AppLocalizations.of(tools.context())!;
+  bool canPop() {
+    return true;
+  }
+
+  bool onPopHandle(bool didPop, dynamic t) {
+    tools.context().read<AppMenuCubit>().emit(AppMenuState.msClosed);
+    return true;
   }
 
   void _saveLocale() async {

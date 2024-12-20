@@ -12,6 +12,14 @@ extension Part2Ext on Part2 {
 
   }
 
+  void _dishInfo(Dish d) {
+    showDialog(context: tools.context(), builder: (builder) {
+      return AlertDialog(
+        content: DishDetails(d, _addToBasket),
+      );
+    });
+  }
+
   void _searchSuggestDish(String? dishname, BuildContext context) {
     if (_overlayEntry != null) {
       _removeOverlay();
@@ -34,6 +42,10 @@ extension Part2Ext on Part2 {
   void _submitSearch(String text) {
     if (_overlayEntry != null) {
       _removeOverlay();
+    }
+    if (text.isEmpty) {
+      tools.context().read<AppSearchTitleCubit>().emit('');
+      return;
     }
 
     final msg = <String, dynamic>{

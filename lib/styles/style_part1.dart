@@ -10,3 +10,5 @@ const basketNameStyle = TextStyle(color: Colors.black, fontSize: 14, fontWeight:
 const paymentTextStyle = TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold);
 const pageHeaderStyle = TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.normal);
 const totalTextStyle = TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold);
+const dishNameStyle = TextStyle(color: Colors.black, fontSize: 17, fontWeight: FontWeight.bold);
+const dishDescriptionStyle = TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic);

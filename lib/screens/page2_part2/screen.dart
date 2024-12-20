@@ -11,7 +11,9 @@ import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/app_cubit.dart';
+import 'package:kinopark/tools/localilzator.dart';
 import 'package:kinopark/tools/tools.dart';
+import 'package:kinopark/widgets/dish_details.dart';
 
 part 'screen.part.dart';
 
@@ -33,26 +35,39 @@ class Part2 extends App {
   @override
   Widget body(BuildContext context) {
     return Column(children: [
-      _part2Row(),
+      _part2Row(context),
       Expanded(child: Container(color: Colors.black12, child: _dishesRow()))
     ]);
   }
 
   @override
   List<Widget> appMenuWidget() {
-    return [
-      for (final e in model.part2.get(part1)) ...[
-        InkWell(
-            onTap: () {
-              tools.context().read<AppMenuCubit>().toggle();
-              _filterDishes(e.f_id);
-            },
-            child: Container(
+    final l = <Widget>[];
+    String parentname = '';
+    for (final e in model.part2.get(part1)) {
+      if (e.parentname(Tools.locale) != parentname) {
+        parentname = e.parentname(Tools.locale);
+        l.add(rowSpace());
+        l.add(rowSpace());
+        l.add(Text(e.parentname(Tools.locale),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.amberAccent)));
+      }
+      l.add(InkWell(
+          onTap: () {
+            tools.context().read<AppMenuCubit>().toggle();
+            tools
+                .context()
+                .read<AppSearchTitleCubit>()
+                .emit(e.name(Tools.locale));
+            _filterDishes(e.f_id);
+          },
+          child: Row(children: [Expanded(child: Container(
               height: 30,
-                margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
-                child: Text(e.name(Tools.locale), style: appMenuItemStyle)))
-      ]
-    ];
+              margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+              child: Text(e.name(Tools.locale), style: appMenuItemStyle)))])));
+    }
+    l.add(const SizedBox(height: 60));
+    return l;
   }
 
   @override
@@ -61,40 +76,53 @@ class Part2 extends App {
   }
 
   Widget appBarSearch(BuildContext context) {
-    return  Container(
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border.fromBorderSide(BorderSide(color: Colors.yellow)),
-                borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: Row(children: [
-              Expanded(
-                  child: TextFormField(
-                      autofocus: true,
-                      key: _textFieldKey,
-                      controller: _searchTextController,
-                      textInputAction: TextInputAction.search,
-                      onFieldSubmitted: _submitSearch,
-                      onChanged: (text) {
-                        _searchSuggestDish(text, context);
-                      },
-                      focusNode: _searchFocus,
-                      decoration: InputDecoration(
-                          hintText: locale().searchDish,
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide.none)))),
-              InkWell(
-                  onTap: () {
-                    _searchTextController.clear();
+    return Container(
+        margin: const EdgeInsets.fromLTRB(0, 5, 5, 5),
+        decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border.fromBorderSide(BorderSide(color: Colors.yellow)),
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        child: Row(children: [
+          Expanded(
+              child: TextFormField(
+                  key: _textFieldKey,
+                  controller: _searchTextController,
+                  textInputAction: TextInputAction.search,
+                  onFieldSubmitted: _submitSearch,
+                  onChanged: (text) {
+                    _searchSuggestDish(text, context);
                   },
-                  child: Container(
-                      height: kToolbarHeight * 0.9,
-                      width: 40,
-                      child: Icon(Icons.clear))),
-            ]));
+                  focusNode: _searchFocus,
+                  decoration: InputDecoration(
+                      hintText: locale().searchDish,
+                      border:
+                          OutlineInputBorder(borderSide: BorderSide.none)))),
+          InkWell(
+              onTap: () {
+                _searchTextController.clear();
+              },
+              child: Container(
+                  height: kToolbarHeight * 0.9,
+                  width: 40,
+                  child: Icon(Icons.clear))),
+          InkWell(
+              onTap: () {
+                _submitSearch(_searchTextController.text);
+              },
+              child: Container(
+                  height: kToolbarHeight * 0.9,
+                  width: 40,
+                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  decoration: const BoxDecoration(),
+                  child: Icon(Icons.search, color: Colors.black)))
+        ]));
   }
 
   Widget _topOfDishes() {
     return BlocBuilder<AppSearchTitleCubit, String>(builder: (builder, state) {
+      if (state.isEmpty) {
+        return Container();
+      }
       return Container(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 0),
           decoration: const BoxDecoration(
@@ -104,27 +132,11 @@ class Part2 extends App {
           padding: const EdgeInsets.all(5),
           child: Row(children: [
             Expanded(
-                child: state.isEmpty
-                    ? appBarSearch(builder)
-                    : Text(
-                        state,
-                        style: topDishPartStyle,
-                        textAlign: TextAlign.center,
-                      )),
-            InkWell(
-                onTap: () {
-                  if (state.isEmpty) {
-                    _submitSearch(_searchTextController.text);
-                  } else {
-                    builder.read<AppSearchTitleCubit>().emit('');
-                  }
-                },
-                child: Container(
-                    height: kToolbarHeight * 0.9,
-                    width: 40,
-                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    decoration: const BoxDecoration(),
-                    child: Icon(Icons.search, color: Colors.white)))
+                child: Text(
+              state,
+              style: topDishPartStyle,
+              textAlign: TextAlign.center,
+            )),
           ]));
     });
   }
@@ -140,7 +152,7 @@ class Part2 extends App {
         child: Stack(children: [
           Column(children: [
             Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              IconButton(onPressed: () {}, icon: Icon(Icons.info_outlined))
+              IconButton(onPressed: () {_dishInfo(e);}, icon: Icon(Icons.info_outlined))
             ]),
           ]),
           Column(children: [
@@ -229,7 +241,7 @@ class Part2 extends App {
     });
   }
 
-  Widget _part2Row() {
+  Widget _part2Row(BuildContext context) {
     return Row(children: [
       Container(
           alignment: Alignment.center,
@@ -237,34 +249,35 @@ class Part2 extends App {
           child: IconButton(
               onPressed: tools.context().read<AppMenuCubit>().toggle,
               icon: Icon(Icons.menu))),
-      Expanded(
-          child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(children: [
-                for (final e in model.part2.get(part1)) ...[
-                  InkWell(
-                      onTap: () {
-                        _filterDishes(e.f_id);
-                        tools
-                            .context()
-                            .read<AppSearchTitleCubit>()
-                            .emit(e.name(Tools.locale));
-                      },
-                      child: Container(
-                          decoration: const BoxDecoration(
-                              color: kMainColor,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.all(5),
-                          padding: const EdgeInsets.all(5),
-                          height: 60,
-                          child: Text(
-                            e.name(Tools.locale),
-                            style: part2style,
-                          )))
-                ]
-              ])))
+      Expanded(child: appBarSearch(context))
+      // Expanded(
+      //     child: SingleChildScrollView(
+      //         scrollDirection: Axis.horizontal,
+      //         child: Row(children: [
+      //           for (final e in model.part2.get(part1)) ...[
+      //             InkWell(
+      //                 onTap: () {
+      //                   _filterDishes(e.f_id);
+      //                   tools
+      //                       .context()
+      //                       .read<AppSearchTitleCubit>()
+      //                       .emit(e.name(Tools.locale));
+      //                 },
+      //                 child: Container(
+      //                     decoration: const BoxDecoration(
+      //                         color: kMainColor,
+      //                         borderRadius:
+      //                             BorderRadius.all(Radius.circular(10))),
+      //                     alignment: Alignment.center,
+      //                     margin: const EdgeInsets.all(5),
+      //                     padding: const EdgeInsets.all(5),
+      //                     height: 60,
+      //                     child: Text(
+      //                       e.name(Tools.locale),
+      //                       style: part2style,
+      //                     )))
+      //           ]
+      //         ])))
     ]);
   }
 
@@ -344,6 +357,9 @@ class Part2 extends App {
                                     f_part: 0,
                                     f_name: '',
                                     f_en: '',
+                                    f_parentnameen: '',
+                                    f_parentnamehy: '',
+                                    f_parentnameru: '',
                                     f_ru: '',
                                     f_image: ''));
                             if (part2.f_id > 0) {
@@ -367,6 +383,9 @@ class Part2 extends App {
                                     f_image: '',
                                     f_print1: '',
                                     f_print2: '',
+                                    f_descriptionen: '',
+                                    f_descriptionhy: '',
+                                    f_descriptionru: '',
                                     f_price: 0,
                                     f_qty: 0,
                                     f_netweight: 0,

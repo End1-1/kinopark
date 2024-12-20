@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kinopark/screens/page0_base/screen.dart';
 import 'package:kinopark/tools/app_bloc.dart';
+import 'package:kinopark/tools/localilzator.dart';
 import 'package:kinopark/tools/tools.dart';
 
 part 'screen.part.dart';

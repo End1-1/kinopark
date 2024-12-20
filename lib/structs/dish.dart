@@ -25,6 +25,9 @@ class Dish extends HiveObject
     @HiveField(10) required String? f_comment,
     @HiveField(11) required String? f_en,
     @HiveField(12) required String? f_ru,
+    @HiveField(13) required String? f_descriptionhy,
+    @HiveField(14) required String? f_descriptionen,
+    @HiveField(15) required String? f_descriptionru
   }) = _Dish;
 
   factory Dish.fromJson(Map<String, dynamic> json) => _$DishFromJson(json);
@@ -37,6 +40,17 @@ class Dish extends HiveObject
         return f_ru ?? f_name;
       default:
         return f_name;
+    }
+  }
+
+  String description(String locale) {
+    switch (locale) {
+      case 'en':
+        return (f_descriptionen == null || f_descriptionen!.isEmpty) ? (f_descriptionhy ?? '') : f_descriptionen!;
+      case 'ru':
+        return (f_descriptionru == null || f_descriptionru!.isEmpty) ? (f_descriptionhy ?? '') : f_descriptionru!;
+      default:
+        return f_descriptionhy ?? '';
     }
   }
 }

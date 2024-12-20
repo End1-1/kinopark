@@ -55,6 +55,11 @@ class AppModel {
     return total;
   }
 
+  double totalWithService() {
+    var serviceFee = (tools.getDouble('servicefee') ?? 0) * basketTotal();
+    return basketTotal() + serviceFee;
+  }
+
   Future<void> addDishToBasket(Dish d) async {
     basket.add(d.copyWith());
     await saveBasketToStorage();

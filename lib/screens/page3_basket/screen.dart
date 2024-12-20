@@ -6,6 +6,7 @@ import 'package:kinopark/screens/page4_payment/screen.dart';
 import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/app_bloc.dart';
+import 'package:kinopark/tools/localilzator.dart';
 import 'package:kinopark/tools/tools.dart';
 
 part 'screen.part.dart';
@@ -26,9 +27,10 @@ class Basket extends App {
                   child: SingleChildScrollView(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                     if (model.basket.isEmpty)
-                      _emptyBasket()
+                       _emptyBasket()
                     else
                       for (int i = 0; i < model.basket.length; i++) ...[
                         BasketDishWidget(
@@ -113,7 +115,9 @@ class Basket extends App {
   }
 
   Widget _emptyBasket() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
       rowSpace(),
       Text(locale().yourBasketEmpty),
       rowSpace(),

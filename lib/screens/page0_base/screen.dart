@@ -1,19 +1,15 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:kinopark/screens/page0_base/model.dart';
 import 'package:kinopark/screens/page3_basket/screen.dart';
 import 'package:kinopark/screens/page5_sendmessage/screen.dart';
-import 'package:kinopark/structs/dish.dart';
-import 'package:kinopark/structs/dish_search_result.dart';
-import 'package:kinopark/structs/dishpart2.dart';
+import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/app_cubit.dart';
+import 'package:kinopark/tools/localilzator.dart';
 import 'package:kinopark/tools/tools.dart';
 import 'package:kinopark/widgets/app_menu.dart';
 import 'package:shimmer/shimmer.dart';
@@ -23,36 +19,40 @@ part 'screen.part.dart';
 abstract class App extends StatelessWidget {
   final AppModel model;
 
-
   App(this.model, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: appBar(context),
-        body: SafeArea(
-            //minimum: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-            child: Stack(children: [
-          body(context),
-          BlocBuilder<AppErrorBloc, AppErrorState>(builder: (context, state) {
-            if (state.errorString.isNotEmpty) {
-              return errorDialog(state.errorString);
-            }
-            return Container();
-          }),
-          BlocBuilder<AppQuestionBloc, AppQuestionState>(
-              builder: (builder, state) {
-            return state.questionString.isEmpty
-                ? Container()
-                : questionDialog(
-                    state.questionString, state.funcYes, state.funcNo);
-          }),
-          BlocBuilder<AppLoadingBloc, LoadingState>(builder: (builder, state) {
-            return state.isLoading ? _loadingWidget() : Container();
-          }),
-          AppMenu(appMenuWidget())
-        ])));
+    return PopScope(
+        canPop: canPop(),
+        onPopInvokedWithResult: onPopHandle,
+        child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: appBar(context),
+            body: SafeArea(
+                //minimum: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                child: Stack(children: [
+              body(context),
+              BlocBuilder<AppErrorBloc, AppErrorState>(
+                  builder: (context, state) {
+                if (state.errorString.isNotEmpty) {
+                  return errorDialog(state.errorString);
+                }
+                return Container();
+              }),
+              BlocBuilder<AppQuestionBloc, AppQuestionState>(
+                  builder: (builder, state) {
+                return state.questionString.isEmpty
+                    ? Container()
+                    : questionDialog(
+                        state.questionString, state.funcYes, state.funcNo);
+              }),
+              BlocBuilder<AppLoadingBloc, LoadingState>(
+                  builder: (builder, state) {
+                return state.isLoading ? _loadingWidget() : Container();
+              }),
+              AppMenu(appMenuWidget())
+            ]))));
   }
 
   Widget body(BuildContext context);
@@ -86,36 +86,50 @@ abstract class App extends StatelessWidget {
   }
 
   Widget basketButton() {
-    return IconButton(
-        onPressed: goToBasket,
-        icon: BlocBuilder<BasketBloc, BasketState>(builder: (builder, state) {
-          return SizedBox(
-              width: 32,
-              height: 32,
-              child: Stack(alignment: Alignment.center, children: [
-                const Icon(Icons.shopping_basket_outlined),
-                model.basket.isEmpty
-                    ? Container()
-                    : Align(
-                    alignment: Alignment.topRight,
-                    child: Container(
-                        width: 16,
-                        height: 16,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Text(
-                            model.basket.isEmpty
-                                ? ''
-                                : '${model.basket.length}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 9,
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold))))
-              ]));
-        }));
+    return BlocBuilder<BasketBloc, BasketState>(builder: (builder, state) {
+      if (model.basket.isEmpty) {
+        return Container();
+      }
+      return InkWell(
+          onTap: goToBasket,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(2, 1, 5, 1),
+            decoration: const BoxDecoration(
+              color: Colors.yellowAccent,
+              borderRadius: BorderRadius.all(Radius.circular(5))
+            ),
+          margin: const EdgeInsets.all(1),  
+              child:  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            SizedBox(
+                width: 32,
+                height: 32,
+                child: Stack(alignment: Alignment.center, children: [
+                  const Icon(Icons.shopping_basket_outlined),
+                  model.basket.isEmpty
+                      ? Container()
+                      : Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                              width: 16,
+                              height: 16,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Text(
+                                  model.basket.isEmpty
+                                      ? ''
+                                      : '${model.basket.length}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      fontSize: 9,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold))))
+                ])),
+            columnSpace(),
+            Text('${tools.mdFormatDouble(model.totalWithService())} ֏', style: basketPriceStyle,)
+          ])));
+    });
   }
 
   Widget languageButton() {

@@ -13,6 +13,7 @@ class AppMenu extends StatefulWidget {
 }
 
 class _AppMenu extends State<AppMenu> {
+
   var pos = 0.0;
 
   @override
@@ -32,9 +33,9 @@ class _AppMenu extends State<AppMenu> {
                       },
                       child: Container(color: Colors.black38))
                   : Container()),
-          AnimatedPositioned(
+           AnimatedPositioned(
               width: width,
-              height: MediaQuery.sizeOf(context).height,
+              height: MediaQuery.sizeOf(context).height - kToolbarHeight ,
               left:
                   state == AppMenuState.msOpen ? 0 : -width,
               duration: const Duration(milliseconds: 300),
