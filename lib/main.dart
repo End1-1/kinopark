@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -194,6 +195,10 @@ class _AppPage extends State<AppPage> {
         final part1 = DishPart1.fromJson(e);
         widget.model.part1.list.add(part1);
       }
+      final boxDishSpecial = await Hive.openBox('dishspecial');
+      widget.model.dishSpecial.addAll(r2['dishspecial']);
+      boxDishSpecial.put('dishspecial', jsonEncode(r2['dishspecial']));
+      boxDishSpecial.close();
       final boxPart1 = await Hive.openBox<List>('part1');
       await boxPart1.put('part1list', widget.model.part1.list);
       boxPart1.close();
@@ -216,6 +221,7 @@ class _AppPage extends State<AppPage> {
       tools.setInt('menuversion', newConfig);
     } else {
       try {
+        final boxDishSpecial = await Hive.openBox('dishspecial');
         final boxPart1 = await Hive.openBox<List>('part1');
         final boxPart2 = await Hive.openBox<List>('part2');
         final boxDishes = await Hive.openBox<List>('dish');
@@ -227,12 +233,20 @@ class _AppPage extends State<AppPage> {
                 [];
         widget.model.dishes.list =
             boxDishes.get('dish', defaultValue: [])?.cast<Dish>() ?? [];
+        widget.model.dishSpecial.addAll(
+            jsonDecode(boxDishSpecial.get('dishspecial')));
       } catch (e) {
         final directory = await getApplicationSupportDirectory();
         final hiveDir = Directory(directory.path);
         await hiveDir.delete(recursive: true);
         tools.setInt('menuversion', -1);
         return await _loadApp();
+      }
+    }
+    if (widget.model.dishSpecial.isNotEmpty) {
+      for (final e in widget.model.dishSpecial) {
+        final m = jsonDecode(e['d']);
+        widget.model.dishSpecialMap[m['dish']] = m['comments'];
       }
     }
     final basketBox = await Hive.openBox<List>('basket');

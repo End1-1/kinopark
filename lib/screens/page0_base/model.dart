@@ -17,6 +17,8 @@ class AppModel {
   final part1 = DishPart1List();
   final part2 = DishPart2List();
   final dishes = DishList();
+  final dishSpecial = [];
+  final dishSpecialMap = {};
   final basket = <Dish>[];
 
   //1 - cash, 2 - card, 3 - idram

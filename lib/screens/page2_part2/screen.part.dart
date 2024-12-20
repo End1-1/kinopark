@@ -8,8 +8,32 @@ extension Part2Ext on Part2 {
   }
 
   void _addToBasket(Dish d) {
-    model.addDishToBasket(d);
-
+    if (model.dishSpecialMap.containsKey(d.f_id)) {
+      showDialog(context: tools.context() , builder: (builder) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+              children: [
+           for (final e in model.dishSpecialMap[d.f_id])...[
+             InkWell(onTap:(){
+               Navigator.pop(builder, e);
+             }, child: Container(
+               padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+               child: Text(e)
+             ))
+           ] 
+          ]),
+        );
+      }).then((comment) {
+        if (comment == null) {
+          BlocProvider.of<AppErrorBloc>(tools.context()).add(AppErrorEvent(locale().atLeastOneOptionMustSelected));
+          return;
+        }
+        model.addDishToBasket(d.copyWith(f_comment: comment));
+      });
+    } else {
+      model.addDishToBasket(d);
+    }
   }
 
   void _dishInfo(Dish d) {

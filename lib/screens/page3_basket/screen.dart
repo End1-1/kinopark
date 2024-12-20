@@ -62,7 +62,7 @@ class Basket extends App {
                               children: [Expanded(
                               child: OutlinedButton(
                                   style: OutlinedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
+                                      shape: const RoundedRectangleBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(10))),
                                       backgroundColor: kMainColor),
@@ -174,7 +174,9 @@ class BasketDishWidget extends StatelessWidget {
                   const SizedBox(width: 5),
                   Text('${tools.mdFormatDouble(dish.f_netweight)} $gSymbol',
                       style: basketWeightStyle)
-                ])
+                ]),
+                if (dish.f_comment != null && dish.f_comment!.isNotEmpty)
+                Row(children: [Text(dish.f_comment ?? '')])
               ])),
           const SizedBox(width: 10),
           Container(

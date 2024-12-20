@@ -16,15 +16,6 @@ class DishDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(children: [
       Column(mainAxisSize: MainAxisSize.min, children: [
-        Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          IconButton(
-              onPressed: () {
-                Navigator.pop(tools.context());
-              },
-              icon: const Icon(Icons.close))
-        ]),
-      ]),
-      Column(mainAxisSize: MainAxisSize.min, children: [
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           dish.f_image.isEmpty
               ? Image.asset('assets/fastfood.png', height: 100)
@@ -74,7 +65,21 @@ class DishDetails extends StatelessWidget {
               },
               child: Text('+ ${locale().add}'))
         ])
-      ])
+      ]),
+      Column(mainAxisSize: MainAxisSize.min, children: [
+        Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          IconButton(
+              onPressed: () {
+                Navigator.pop(tools.context());
+              },
+              icon: Container(
+                decoration: const BoxDecoration(color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(50)),
+                  border: Border.fromBorderSide(BorderSide(color: Colors.lightGreen))
+                ),
+                  child:  const Icon(Icons.close)))
+        ]),
+      ]),
     ]);
   }
 }

@@ -35,5 +35,6 @@
   "goToPayment": "Go to payment",
   "searchResult": "Search result",
   "goto": "Go to",
-  "noPermissionForThisAction": "No permission for this action"
+  "noPermissionForThisAction": "No permission for this action",
+  "atLeastOneOptionMustSelected": "At least one option must be selected."
 }
