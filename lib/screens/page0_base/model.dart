@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +21,7 @@ class AppModel {
   final dishes = DishList();
   final dishSpecial = [];
   final dishSpecialMap = {};
+  final dishRecentMap = [];
   final basket = <Dish>[];
 
   //1 - cash, 2 - card, 3 - idram
@@ -47,6 +50,23 @@ class AppModel {
       return [];
     }
     return dishes.list.where((e) => e.f_part == filteredPart2!.f_id).toList();
+  }
+
+  List<Dish> recentDishes(int part1) {
+    if (part1 == 0) {
+      return [];
+    }
+    final list = [];
+    for (final m in dishRecentMap) {
+      final mm = jsonDecode(m["d"]);
+      if (mm["f_part1"] == part1) {
+        list.addAll(mm["recent"]);
+      }
+    }
+    if (list == null) {
+      return [];
+    }
+    return dishes.list.where((e) => list.contains(e.f_id)).toList();
   }
 
   double basketTotal() {

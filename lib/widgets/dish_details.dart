@@ -58,6 +58,7 @@ class DishDetails extends StatelessWidget {
                 child: Text('${tools.mdFormatDouble(dish.f_netweight)} ${locale().g}',
                     textAlign: TextAlign.center, style: basketWeightStyle))
           ]),
+        const SizedBox(height: 10),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           OutlinedButton(
               onPressed: () {

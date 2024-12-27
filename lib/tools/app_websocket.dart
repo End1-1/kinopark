@@ -51,6 +51,7 @@ class AppWebSocket {
       }
       _replyMessage({'errorCode':-12, 'errorMessage': 'Reconnected'});
       _setConnectionState(ConnectionStateType.connected);
+      sendMessage(jsonEncode({'command':'register_socket', 'socket_type':4, 'userid':0, 'database':'kinopark'}), null);
     } catch (e) {
       _replyMessage({'errorCode':-10, 'errorMessage': e.toString()});
       _closeChannel();

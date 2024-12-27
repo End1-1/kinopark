@@ -50,7 +50,10 @@ class Part2 extends App {
         l.add(rowSpace());
         l.add(rowSpace());
         l.add(Text(e.parentname(Tools.locale),
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.amberAccent)));
+            style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.amberAccent)));
       }
       l.add(InkWell(
           onTap: () {
@@ -61,10 +64,13 @@ class Part2 extends App {
                 .emit(e.name(Tools.locale));
             _filterDishes(e.f_id);
           },
-          child: Row(children: [Expanded(child: Container(
-              height: 30,
-              margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
-              child: Text(e.name(Tools.locale), style: appMenuItemStyle)))])));
+          child: Row(children: [
+            Expanded(
+                child: Container(
+                    height: 30,
+                    margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+                    child: Text(e.name(Tools.locale), style: appMenuItemStyle)))
+          ])));
     }
     l.add(const SizedBox(height: 60));
     return l;
@@ -142,6 +148,9 @@ class Part2 extends App {
   }
 
   Widget _dishWidget(Dish e) {
+    if (e.f_id == 0) {
+      return Container();
+    }
     return Container(
         margin: const EdgeInsets.all(5),
         padding: const EdgeInsets.all(5),
@@ -152,7 +161,11 @@ class Part2 extends App {
         child: Stack(children: [
           Column(children: [
             Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              IconButton(onPressed: () {_dishInfo(e);}, icon: Icon(Icons.info_outlined))
+              IconButton(
+                  onPressed: () {
+                    _dishInfo(e);
+                  },
+                  icon: Icon(Icons.info_outlined))
             ]),
           ]),
           Column(children: [
@@ -189,7 +202,8 @@ class Part2 extends App {
         child: Stack(children: [
           Column(children: [
             Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              IconButton(onPressed: () {}, icon: Icon(Icons.info_outlined))
+              IconButton(
+                  onPressed: () {}, icon: const Icon(Icons.info_outlined))
             ]),
           ]),
           Column(children: [
@@ -230,11 +244,13 @@ class Part2 extends App {
             for (final es in model.searchResult) ...[
               if (es.mode == 1)
                 _dishWidget(
-                    model.dishes.list.firstWhere((e) => e.f_id == es.id)),
+                    model.dishes.list.firstWhere((e) => e.f_id == es.id, orElse: () => Dish(f_id: 0, f_part: 0, f_name: '', f_image: '', f_print1: '', f_print2: '', f_price: 0, f_qty: 0, f_netweight: 0, f_store: 0, f_comment: '', f_en: '', f_ru: '', f_descriptionhy: '', f_descriptionen: '', f_descriptionru: ''))),
               if (es.mode == 2)
                 _part2Widget(
-                    model.part2.list.firstWhere((e) => e.f_id == es.id))
-            ]
+                    model.part2.list.firstWhere((e) => e.f_id == es.id)),
+            ],
+            if (model.filteredDishes().isEmpty && model.searchResult.isEmpty)
+              for (final e in model.recentDishes(part1)) ...[_dishWidget(e)]
           ],
         )))
       ]);
@@ -248,36 +264,8 @@ class Part2 extends App {
           margin: const EdgeInsets.all(5),
           child: IconButton(
               onPressed: tools.context().read<AppMenuCubit>().toggle,
-              icon: Icon(Icons.menu))),
+              icon: const Icon(Icons.menu))),
       Expanded(child: appBarSearch(context))
-      // Expanded(
-      //     child: SingleChildScrollView(
-      //         scrollDirection: Axis.horizontal,
-      //         child: Row(children: [
-      //           for (final e in model.part2.get(part1)) ...[
-      //             InkWell(
-      //                 onTap: () {
-      //                   _filterDishes(e.f_id);
-      //                   tools
-      //                       .context()
-      //                       .read<AppSearchTitleCubit>()
-      //                       .emit(e.name(Tools.locale));
-      //                 },
-      //                 child: Container(
-      //                     decoration: const BoxDecoration(
-      //                         color: kMainColor,
-      //                         borderRadius:
-      //                             BorderRadius.all(Radius.circular(10))),
-      //                     alignment: Alignment.center,
-      //                     margin: const EdgeInsets.all(5),
-      //                     padding: const EdgeInsets.all(5),
-      //                     height: 60,
-      //                     child: Text(
-      //                       e.name(Tools.locale),
-      //                       style: part2style,
-      //                     )))
-      //           ]
-      //         ])))
     ]);
   }
 
@@ -403,14 +391,23 @@ class Part2 extends App {
                           }
                         },
                         mouseCursor: SystemMouseCursors.click,
-                        child: Row(children: [
-                          Expanded(
-                              child: Container(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                  color: Colors.white,
-                                  child: Text(_searchResult[index].name)))
-                        ])))),
+                        child: Container(
+                            padding: const EdgeInsets.all(2),
+                            color: Colors.white,
+                            child: _searchResult[index].mode == -1
+                                ? Row(children: [
+                                    CircularProgressIndicator(),
+                                    Expanded(child: Container())
+                                  ])
+                                : Row(children: [
+                                    Expanded(
+                                        child: Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                5, 5, 5, 5),
+                                            color: Colors.white,
+                                            child: Text(
+                                                _searchResult[index].name)))
+                                  ]))))),
           ),
         ),
       ),

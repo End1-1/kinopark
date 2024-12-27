@@ -43,7 +43,8 @@ void main() async {
     BlocProvider<AppLoadingBloc>(
         create: (_) => AppLoadingBloc(LoadingState(0, false))),
     BlocProvider<AppMenuCubit>(create: (_) => AppMenuCubit()),
-    BlocProvider<AppSearchTitleCubit>(create: (_) => AppSearchTitleCubit(''))
+    BlocProvider<AppSearchTitleCubit>(create: (_) => AppSearchTitleCubit('')),
+    BlocProvider<AppCubit>(create: (_) => AppCubit())
   ], child: KinoparkApp()));
 }
 
@@ -218,6 +219,10 @@ class _AppPage extends State<AppPage> {
       final boxDishes = await Hive.openBox<List>('dish');
       await boxDishes.put('dish', widget.model.dishes.list);
       boxDishes.close();
+      widget.model.dishRecentMap.addAll(r2['recent']);
+      final boxRecent = await Hive.openBox('recent');
+      await boxRecent.put('recent', jsonEncode(widget.model.dishRecentMap));
+      boxRecent.close();
       tools.setInt('menuversion', newConfig);
     } else {
       try {
@@ -225,6 +230,7 @@ class _AppPage extends State<AppPage> {
         final boxPart1 = await Hive.openBox<List>('part1');
         final boxPart2 = await Hive.openBox<List>('part2');
         final boxDishes = await Hive.openBox<List>('dish');
+        final boxRecent = await Hive.openBox('recent');
         widget.model.part1.list =
             boxPart1.get('part1list', defaultValue: [])?.cast<DishPart1>() ??
                 [];
@@ -235,6 +241,12 @@ class _AppPage extends State<AppPage> {
             boxDishes.get('dish', defaultValue: [])?.cast<Dish>() ?? [];
         widget.model.dishSpecial.addAll(
             jsonDecode(boxDishSpecial.get('dishspecial')));
+        widget.model.dishRecentMap.addAll(jsonDecode(boxRecent.get('recent')));
+        boxDishSpecial.close();
+        boxPart1.close();
+        boxPart2.close();
+        boxDishes.close();
+        boxRecent.close();
       } catch (e) {
         final directory = await getApplicationSupportDirectory();
         final hiveDir = Directory(directory.path);

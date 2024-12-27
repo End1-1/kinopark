@@ -86,6 +86,14 @@ extension Part2Ext on Part2 {
     for (final e in data['result'] ?? []) {
       _searchResult.add(DishSearchStruct.fromJson(e));
     }
+    if (data['errorCode'] != 0) {
+      _searchResult.add(DishSearchStruct(id: 0, mode: -1, name: ''));
+      Future.delayed(const Duration(seconds: 2), (){
+        if (_searchTextController.text.isNotEmpty) {
+          _searchSuggestDish(_searchTextController.text, _textFieldKey.currentContext!);
+        }
+      });
+    }
     _overlayEntry = _createOverlay();
     Overlay.of(_overlayContext)?.insert(_overlayEntry!);
   }

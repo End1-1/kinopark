@@ -79,7 +79,7 @@ class HomePage extends App {
             ),
             PopupMenuItem(
               onTap: navigateToSendMessage,
-              child: ListTile(leading: Icon(Icons.help_outline), title: Text( locale().support)),
+              child: ListTile(leading: const Icon(Icons.help_outline), title: Text( locale().support)),
             ),
             logoutButton()
           ];
