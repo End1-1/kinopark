@@ -54,7 +54,7 @@ extension Part2Ext on Part2 {
 
     final msg = <String, dynamic>{
       'command': 'search_text',
-      'database':'kinopark',
+      'database': tools.database(),
       'template': _searchTextController.text.toLowerCase(),
       'language': Tools.locale,
     };
@@ -74,7 +74,7 @@ extension Part2Ext on Part2 {
 
     final msg = <String, dynamic>{
       'command': 'search_text',
-      'database':'kinopark',
+      'database': tools.database(),
       'template': text.toLowerCase(),
       'language': Tools.locale,
     };
@@ -110,12 +110,6 @@ extension Part2Ext on Part2 {
     BlocProvider.of<Page1Bloc>(tools.context()).add(Page1Event());
     tools.context().read<AppSearchTitleCubit>().emit(
         '${locale().searchResult} "${_searchTextController.text}"');
-  }
-
-  void _searchDish() {
-    _removeOverlay();
-    _isSuggestionTap = false;
-
   }
 
   void _searchFocusChanged() {

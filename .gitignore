@@ -12,6 +12,7 @@ build/
 ./.dart_tool/
 *.freezed.dart
 *.g.dart
+*.env.*
 
 ### Eclipse ###
 .apt_generated

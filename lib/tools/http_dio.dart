@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kinopark/tools/localilzator.dart';
 import 'package:kinopark/tools/tools.dart';
 
 class HttpDio {
@@ -11,20 +12,22 @@ class HttpDio {
 
   Future<dynamic> post(String route,
       {Map<String, dynamic> inData = const {}}) async {
-    inData.addAll({'sessionkey': tools.getString('sessionkey')});
+    if ((tools.getString('sessionkey') ?? '').isNotEmpty ) {
+      inData.addAll({'sessionkey': tools.getString('sessionkey')});
+    }
     inData['sessionid'] = 1;
     try {
+      var host = '${tools.serverName()}/engine/$route';
       if (kDebugMode) {
-        print('request: https://${tools.serverName()}/engine/$route');
+        print('request: $host');
         print(inData);
       }
-      final response = await dio.post(
-          'https://${tools.serverName()}/engine/$route',
-          data: inData,
-          options: Options(
-              responseType: ResponseType.plain,
-              contentType: 'application/json'));
       try {
+        final response = await dio.post(host,
+            data: inData,
+            options: Options(
+                responseType: ResponseType.plain,
+                contentType: 'application/json'));
         final strData = response.data.toString();
         if (kDebugMode) {
           print('reply size ${strData.length}');
@@ -34,9 +37,17 @@ class HttpDio {
           final outData = jsonDecode(strData);
           return outData;
         } catch (se) {
+
           return Future.error(strData);
         }
       } catch (e) {
+        if (e is DioException) {
+          var err = e.response?.data ?? e.message.toString();
+          if (err.toLowerCase() == 'access denied') {
+            err = locale().accessDenied;
+          }
+          return Future.error(err);
+        }
         return Future.error(e.toString());
       }
     } on DioException catch (d, e) {

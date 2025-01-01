@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
@@ -93,42 +92,45 @@ abstract class App extends StatelessWidget {
       return InkWell(
           onTap: goToBasket,
           child: Container(
-            padding: const EdgeInsets.fromLTRB(2, 1, 5, 1),
-            decoration: const BoxDecoration(
-              color: Colors.yellowAccent,
-              borderRadius: BorderRadius.all(Radius.circular(5))
-            ),
-          margin: const EdgeInsets.all(1),  
-              child:  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            SizedBox(
-                width: 32,
-                height: 32,
-                child: Stack(alignment: Alignment.center, children: [
-                  const Icon(Icons.shopping_basket_outlined),
-                  model.basket.isEmpty
-                      ? Container()
-                      : Align(
-                          alignment: Alignment.topRight,
-                          child: Container(
-                              width: 16,
-                              height: 16,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Text(
-                                  model.basket.isEmpty
-                                      ? ''
-                                      : '${model.basket.length}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      fontSize: 9,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold))))
-                ])),
-            columnSpace(),
-            Text('${tools.mdFormatDouble(model.totalWithService())} ֏', style: basketPriceStyle,)
-          ])));
+              padding: const EdgeInsets.fromLTRB(2, 1, 5, 1),
+              decoration: const BoxDecoration(
+                  color: Colors.yellowAccent,
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              margin: const EdgeInsets.all(1),
+              child:
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: Stack(alignment: Alignment.center, children: [
+                      const Icon(Icons.shopping_basket_outlined),
+                      model.basket.isEmpty
+                          ? Container()
+                          : Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                  width: 16,
+                                  height: 16,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Text(
+                                      model.basket.isEmpty
+                                          ? ''
+                                          : '${model.basket.length}',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                          fontSize: 9,
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold))))
+                    ])),
+                columnSpace(),
+                Text(
+                  '${tools.mdFormatDouble(model.totalWithService())} ֏',
+                  style: basketPriceStyle,
+                )
+              ])));
     });
   }
 
@@ -142,7 +144,7 @@ abstract class App extends StatelessWidget {
   }
 
   PopupMenuItem username() {
-    if (tools.getString('last') == null) {
+    if (tools.getString('last') == null || tools.getString('login') == null) {
       return PopupMenuItem(
           onTap: _navigateToLogin,
           child: ListTile(
@@ -198,19 +200,24 @@ abstract class App extends StatelessWidget {
     return SizedBox(
         height: size,
         width: size,
-        child: CachedNetworkImage(
-          imageUrl:
-              'https://${tools.serverName()}/engine/media/dishes/$path.png',
-          placeholder: (context, url) => Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              width: size,
-              height: size,
-              color: Colors.white,
-            ),
-          ),
-          errorWidget: (context, url, error) =>
+        child: Image.network(
+          '${tools.serverName()}/engine/media/dishes/$path.png',
+          headers: {'Access-Control-Allow-Origin': '*'},
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) {
+              return child;
+            }
+            return Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                width: size,
+                height: size,
+                color: Colors.white,
+              ),
+            );
+          },
+          errorBuilder: (context, url, error) =>
               Image.asset('assets/fastfood.png', height: 50),
           fit: BoxFit.scaleDown,
         ));

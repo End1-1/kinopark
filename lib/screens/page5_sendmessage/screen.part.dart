@@ -7,7 +7,7 @@ extension SendMessageExt on SendMessage {
     }
     final msg = {
       'sessionkey': tools.getString('sessionkey'),
-      'database': 'kinopark',
+      'database': tools.database(),
       'command': 'chat',
       'handler': 'newmessage',
       'from': tools.getString('sessionkey'),

@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -22,9 +24,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   //debugPaintSizeEnabled = true;
+  //debugPaintPointersEnabled = true;
+
   WidgetsFlutterBinding.ensureInitialized();
-  final directory = await getApplicationSupportDirectory();
-  await Hive.initFlutter(directory.path);
+  const String env = String.fromEnvironment('ENV');
+  print('used env: $env');
+  await dotenv.load(fileName: '.env.$env');
+
+  if (kIsWeb) {
+    await Hive.initFlutter();
+  } else {
+    final directory = await getApplicationSupportDirectory();
+    await Hive.initFlutter(directory.path);
+  }
   Hive.registerAdapter(DishPart1Adapter());
   Hive.registerAdapter(DishPart2Adapter());
   Hive.registerAdapter(DishAdapter());
@@ -41,7 +53,7 @@ void main() async {
     BlocProvider<AppQuestionBloc>(
         create: (_) => AppQuestionBloc(AppQuestionState(0, '', () {}, null))),
     BlocProvider<AppLoadingBloc>(
-        create: (_) => AppLoadingBloc(LoadingState(0, false))),
+        create: (_) => AppLoadingBloc(const LoadingState(0, false))),
     BlocProvider<AppMenuCubit>(create: (_) => AppMenuCubit()),
     BlocProvider<AppSearchTitleCubit>(create: (_) => AppSearchTitleCubit('')),
     BlocProvider<AppCubit>(create: (_) => AppCubit())
@@ -70,7 +82,11 @@ class KinoparkApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en'), Locale('hy'), Locale('ru')],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('hy'),
+            Locale('ru')
+          ],
           home: AppPage());
     });
   }
@@ -107,7 +123,14 @@ class _AppPage extends State<AppPage> {
                     .toString()
                     .toLowerCase()
                     .contains('invalid session key')) {
-                  return _authWidget();
+                  if (dotenv.env['startasguest'] != 'true') {
+                    return _authWidget();
+                  } else {
+                    tools.setString('sessionkey', '');
+                    setState(() {
+
+                    });
+                  }
                 }
                 return _errorWidget(snapshot.error.toString());
               }
@@ -133,7 +156,7 @@ class _AppPage extends State<AppPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-          Image.asset('assets/kinopark.png', height: 200),
+          Image.asset('assets/${dotenv.env['icon']}', height: 200),
           const CircularProgressIndicator()
         ]));
   }
@@ -144,7 +167,7 @@ class _AppPage extends State<AppPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-          Image.asset('assets/kinopark.png', height: 200),
+          Image.asset('assets/${dotenv.env['icon']}', height: 200),
           Row(children: [
             Expanded(child: Text(err, textAlign: TextAlign.center))
           ]),
@@ -165,25 +188,49 @@ class _AppPage extends State<AppPage> {
 
   Future<Object> _loadApp() async {
     tools = await SharedPreferences.getInstance();
+    if (tools.getString('sessionkey') == null) {
+      tools.setString('sessionkey', '');
+    }
     final packageInfo = await PackageInfo.fromPlatform();
+    if (kDebugMode) {
+      print('width of screen ${MediaQuery
+          .sizeOf(tools.context())
+          .width}');
+    }
     String appName = packageInfo.appName;
     //String packageName = packageInfo.packageName;
     String version = packageInfo.version;
     String buildNumber = packageInfo.buildNumber;
     tools.setString('app_version', '$version.$buildNumber');
     widget.model.init();
-    if ((tools.getString('sessionkey') ?? '').isEmpty) {
+    if (tools.getString('sessionkey')!.isEmpty && dotenv.env['startasguest'] != 'true') {
       return Future.value({'needauth': true});
     }
-    var r1 = await HttpDio().post('login.php', inData: {'method': 3});
+    dynamic r1;
+    if (dotenv.env['startasguest'] == 'true' && tools.getString('sessionkey')!.isEmpty) {
+      r1 = await HttpDio().post('login.php', inData: {'method': 4});
+      r1 = r1['data'];
+      tools.setString('sessionkey', r1['sessionkey']);
+      r1 = r1['config'];
+      _loadingFunc = _loadApp();
+      setState(() {});
+      return true;
+    } else {
+      r1 = await HttpDio().post('login.php', inData: {'method': 3});
+    }
     final userinfo = r1['data']['user'];
     tools.setString('last', userinfo['f_last']);
     tools.setString('first', userinfo['f_first']);
+    if (userinfo['f_login'] == null) {
+      tools.remove('login');
+    } else {
+      tools.setString('login', userinfo['f_login']!);
+    }
     r1 = r1['data']['config']['f_config'];
     tools.setInt('hall', r1['hall']);
-    tools.setInt('table', r1['table']);
+    tools.setInt('table', r1['table'] ?? 0);
     tools.setInt('chatoperatoruserid', r1['chatoperatoruserid'] ?? 0);
-    tools.setDouble('servicefee', r1['servicefactor'] ?? 0.0);
+    tools.setDouble('servicefee', (r1['servicefactor'] ?? 0.0).toDouble());
     tools.setBool('debugmode', r1['debugmode'] ?? false);
     tools.setBool('denylogout', r1['denylogout'] ?? false);
     final oldConfig = tools.getInt('menuversion') ?? 0;
@@ -239,8 +286,8 @@ class _AppPage extends State<AppPage> {
                 [];
         widget.model.dishes.list =
             boxDishes.get('dish', defaultValue: [])?.cast<Dish>() ?? [];
-        widget.model.dishSpecial.addAll(
-            jsonDecode(boxDishSpecial.get('dishspecial')));
+        widget.model.dishSpecial
+            .addAll(jsonDecode(boxDishSpecial.get('dishspecial')));
         widget.model.dishRecentMap.addAll(jsonDecode(boxRecent.get('recent')));
         boxDishSpecial.close();
         boxPart1.close();

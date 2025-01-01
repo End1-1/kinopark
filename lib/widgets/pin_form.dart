@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/tools.dart';
 
@@ -18,7 +19,7 @@ class _PinFormState extends State<PinForm> {
     return Align(
         alignment: Alignment.center,
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Image.asset('assets/kinopark.png', height: 200),
+          Image.asset('assets/${dotenv.env['icon']}', height: 200),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

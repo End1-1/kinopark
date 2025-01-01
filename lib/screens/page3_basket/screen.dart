@@ -1,25 +1,33 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:kinopark/screens/page0_base/model.dart';
 import 'package:kinopark/screens/page0_base/screen.dart';
 import 'package:kinopark/screens/page4_payment/screen.dart';
+import 'package:kinopark/screens/page6_map/screen.dart';
 import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/localilzator.dart';
 import 'package:kinopark/tools/tools.dart';
+import 'package:kinopark/widgets/textfield_address.dart';
 
 part 'screen.part.dart';
 
 class Basket extends App {
+  final _addressTextController = TextEditingController();
   Basket(super.model, {super.key});
 
   @override
   Widget body(BuildContext context) {
-    return Container(
-        width: MediaQuery.sizeOf(context).width,
+    return  Container(
+        width: MediaQuery.of(context).size.width,
         decoration: const BoxDecoration(color: Colors.black12),
-        child: BlocBuilder<BasketBloc, BasketState>(builder: (builder, state) {
+        child: Column(children: [
+          TextFieldAddress(_addressTextController, IconButton(onPressed: _getAddressFromMap, icon: Icon(Icons.location_on_outlined, color: Colors.green))),
+         Expanded(child:   BlocBuilder<BasketBloc, BasketState>(builder: (builder, state) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -30,7 +38,7 @@ class Basket extends App {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                     if (model.basket.isEmpty)
-                       _emptyBasket()
+                       _emptyBasket(context)
                     else
                       for (int i = 0; i < model.basket.length; i++) ...[
                         BasketDishWidget(
@@ -75,7 +83,7 @@ class Basket extends App {
               rowSpace()
             ],
           );
-        }));
+        }))]));
   }
 
   List<Widget> appBarActions(BuildContext context) {
@@ -94,7 +102,7 @@ class Basket extends App {
                   ),
                   title: Text(localeName()),
                   onTap: () {
-                    Navigator.pop(context); // Закрыть меню
+                    Navigator.pop(context);
                     showMenu(
                       context: context,
                       position: const RelativeRect.fromLTRB(100, 100, 0, 0),
@@ -114,7 +122,7 @@ class Basket extends App {
     ];
   }
 
-  Widget _emptyBasket() {
+  Widget _emptyBasket(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -123,7 +131,7 @@ class Basket extends App {
       rowSpace(),
       Image.asset(
         'assets/smile.png',
-        height: MediaQuery.sizeOf(tools.context()).width / 3,
+        height: MediaQuery.of(context).size.width / 3,
         color: Colors.blueAccent,
       )
     ]);

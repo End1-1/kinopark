@@ -36,7 +36,7 @@ class Part2 extends App {
   Widget body(BuildContext context) {
     return Column(children: [
       _part2Row(context),
-      Expanded(child: Container(color: Colors.black12, child: _dishesRow()))
+      Expanded(child: Container(color: Colors.white, child: _dishesRow()))
     ]);
   }
 
@@ -152,9 +152,17 @@ class Part2 extends App {
       return Container();
     }
     return Container(
-        margin: const EdgeInsets.all(5),
+      constraints: const BoxConstraints(maxWidth: 300),
+        margin: const EdgeInsets.all(15),
         padding: const EdgeInsets.all(5),
         decoration: const BoxDecoration(
+            boxShadow: [
+        BoxShadow(
+        color: Colors.grey, // Цвет тени
+      spreadRadius:2, // Расширение
+      blurRadius: 15, // Размытие
+      offset: const Offset(2, 4), // Смещение (x, y)
+    )],
             borderRadius: BorderRadius.all(Radius.circular(10)),
             color: Colors.white),
         width: rectWidth,
@@ -234,11 +242,17 @@ class Part2 extends App {
 
   Widget _dishesRow() {
     return BlocBuilder<Page1Bloc, Page1State>(builder: (builder, state) {
-      return Column(children: [
+      return Container( child:  Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
         _topOfDishes(),
         Expanded(
             child: SingleChildScrollView(
-                child: Wrap(
+                child: Row(
+                    children: [Expanded(child: Wrap(
+                      alignment: WrapAlignment.center,
+                  runSpacing: 10,
           children: [
             for (final e in model.filteredDishes()) ...[_dishWidget(e)],
             for (final es in model.searchResult) ...[
@@ -252,8 +266,9 @@ class Part2 extends App {
             if (model.filteredDishes().isEmpty && model.searchResult.isEmpty)
               for (final e in model.recentDishes(part1)) ...[_dishWidget(e)]
           ],
-        )))
-      ]);
+        ))])
+            ))
+      ]));
     });
   }
 

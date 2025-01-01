@@ -35,5 +35,6 @@
   "goToPayment": "Անցնել վճարմանը",
   "searchResult": "Փնտրելու արձյունքները",
   "goto": "Անցնել",
-  "noPermissionForThisAction": "Հնարավոր չէ կատարել ձեր հրահանգը"
+  "noPermissionForThisAction": "Հնարավոր չէ կատարել ձեր հրահանգը",
+  "accessDenied": "Գործողությունը արգելված է"
 }

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kinopark/structs/dish.dart';
 import 'package:kinopark/styles/style_part1.dart';
@@ -22,10 +21,13 @@ class DishDetails extends StatelessWidget {
               : SizedBox(
                   height: 200,
                   width: 200,
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        'https://${tools.serverName()}/engine/media/dishes/${dish.f_image}.png',
-                    placeholder: (context, url) => Shimmer.fromColors(
+                  child: Image.network(
+                        '${tools.serverName()}/engine/media/dishes/${dish.f_image}.png',
+                    loadingBuilder: (context, child, progress) {
+                          if (progress == null) {
+                            return child;
+                          }
+                          return Shimmer.fromColors(
                       baseColor: Colors.grey[300]!,
                       highlightColor: Colors.grey[100]!,
                       child: Container(
@@ -33,8 +35,8 @@ class DishDetails extends StatelessWidget {
                         height: 200,
                         color: Colors.white,
                       ),
-                    ),
-                    errorWidget: (context, url, error) =>
+                    );},
+                    errorBuilder: (context, url, error) =>
                         Image.asset('assets/fastfood.png', height: 50),
                     fit: BoxFit.scaleDown,
                   ))

@@ -30,7 +30,9 @@ class AppWebSocket {
         connectionState == ConnectionStateType.connecting) {
       return;
     }
-    _host = 'wss://${tools.serverName()}/ws';
+
+      _host = tools.webSocketAddress();
+
     if (kDebugMode) {
       print('Connecting to: $_host');
     }
