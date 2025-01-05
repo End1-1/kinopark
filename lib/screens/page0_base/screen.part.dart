@@ -1,7 +1,6 @@
 part of 'screen.dart';
 
 extension AppExt on App {
-
   bool canPop() {
     return true;
   }
@@ -49,7 +48,23 @@ extension AppExt on App {
   }
 
   void goToBasket() {
-    Navigator.push(tools.context(), MaterialPageRoute(builder: (builder) => Basket(model)));
+    if (dotenv.env['startasguest'] == 'true') {
+      if (tools.getString('login') == null) {
+        tools.context().read<AppCubit>().setActivationState(false);
+        Navigator.push(tools.context(),
+                MaterialPageRoute(builder: (builder) => Signup(model)))
+            .then((success) {
+          if (success == true) {
+            Navigator.push(tools.context(),
+                MaterialPageRoute(builder: (builder) => Basket(model)));
+
+          }
+        });
+        return;
+      }
+    }
+    Navigator.push(tools.context(),
+        MaterialPageRoute(builder: (builder) => Basket(model)));
   }
 
   void navigateToSendMessage() {
@@ -61,7 +76,8 @@ extension AppExt on App {
 
   void _logout() {
     if (tools.getBool('denylogout') ?? false) {
-      BlocProvider.of<AppErrorBloc>(tools.context()).add(AppErrorEvent(locale().noPermissionForThisAction));
+      BlocProvider.of<AppErrorBloc>(tools.context())
+          .add(AppErrorEvent(locale().noPermissionForThisAction));
       return;
     }
     BlocProvider.of<AppQuestionBloc>(tools.context())

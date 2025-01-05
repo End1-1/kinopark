@@ -157,6 +157,7 @@ class _AppPage extends State<AppPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
           Image.asset('assets/${dotenv.env['icon']}', height: 200),
+          const SizedBox(height: 10),
           const CircularProgressIndicator()
         ]));
   }
@@ -221,6 +222,7 @@ class _AppPage extends State<AppPage> {
     final userinfo = r1['data']['user'];
     tools.setString('last', userinfo['f_last']);
     tools.setString('first', userinfo['f_first']);
+    tools.setInt('userid', userinfo['f_id']);
     if (userinfo['f_login'] == null) {
       tools.remove('login');
     } else {

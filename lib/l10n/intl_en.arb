@@ -41,5 +41,14 @@
   "searchAddress": "Search address",
   "cannotGetAddress": "Cannot get address",
   "missingAddress": "Missing address",
-  "pleaseSetAddress": "Please, set address"
+  "pleaseSetAddress": "Please, set address",
+  "phoneNumber": "Phone number",
+  "signUp": "Sign up",
+  "invalidPhoneNumber": "Invalid phone number",
+  "confirm": "Confirm",
+  "invalidConfirmationCode": "Invalid confirmation code",
+  "inputComfirmationCode": "Input comfirmation code",
+  "whereAreSendCodeOn": "We are sent code on ",
+  "changePhoneNumber": "Change phone number",
+  "aptNumber": "apt. number"
 }

@@ -22,6 +22,7 @@ class Basket extends App {
 
   @override
   Widget body(BuildContext context) {
+    _addressTextController.text = tools.getString('address') ?? '';
     return  Container(
         width: MediaQuery.of(context).size.width,
         decoration: const BoxDecoration(color: Colors.black12),

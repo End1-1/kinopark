@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:hive/hive.dart';
 import 'package:kinopark/screens/page0_base/model.dart';
 import 'package:kinopark/screens/page3_basket/screen.dart';
 import 'package:kinopark/screens/page5_sendmessage/screen.dart';
+import 'package:kinopark/screens/page7_signup/screen.dart';
 import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
 import 'package:kinopark/tools/app_bloc.dart';
@@ -150,6 +152,14 @@ abstract class App extends StatelessWidget {
           child: ListTile(
               leading: Icon(Icons.login), title: Text(locale().login)));
     }
+    if (tools.getString('last') == 'Name' && tools.getString('first') == 'Guest') {
+      return PopupMenuItem(
+          enabled: false,
+          child: DefaultTextStyle.merge(
+              style: const TextStyle(color: Colors.black),
+              child: Text(
+                  '${tools.getString('login')}')));
+    }
     return PopupMenuItem(
         enabled: false,
         child: DefaultTextStyle.merge(
@@ -234,6 +244,7 @@ abstract class App extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                 color: Colors.white,
+                constraints: BoxConstraints(maxWidth: MediaQuery.of(tools.context()).size.width * 0.7),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -118,10 +118,11 @@ class AppModel {
   Future<void> createOrder() async {
     final body = <String, dynamic>{};
     final header = <String, dynamic>{};
+    final address = <String,dynamic>{};
     final serviceFeeValue = tools.getDouble('servicefee') ?? 0;
     final serviceFeeAmount = basketTotal() * serviceFeeValue;
     final totalAmount = basketTotal() + serviceFeeAmount;
-    header['state'] = 2;
+    header['state'] = 5;
     header['hall'] = tools.getInt('hall');
     header['table'] = tools.getInt('table');
     header['comment'] = additionalInfo;
@@ -134,10 +135,16 @@ class AppModel {
     header["amountservice"] = serviceFeeAmount;
     header['amountdiscount'] = 0;
     header['discountfactor'] = 0;
-    header['partner'] = 0;
+    header['partner'] = tools.getInt('userid') ?? 0;
     header['taxpayertin'] = '';
+
+    address['address'] = tools.getString('full_address');
+    address['latlng'] = tools.getString('address_location');
+    address['apt'] = tools.getString('apt');
+
     body['action'] = 'create';
     body['header'] = header;
+    body['address'] = address;
     body['flags'] = {'f1': 0, 'f2': 0, 'f3': 0, 'f4': 0, 'f5': 0};
     body['dishes'] = [];
     int row = 0;
@@ -168,10 +175,11 @@ class AppModel {
     }
 
     BlocProvider.of<HttpBloc>(tools.context()).add(
-        HttpEvent('kinopark/create-order.php', body, callback: _orderCreated));
+        HttpEvent('kinopark/create-order.php', body, _orderCreated));
   }
 
-  void _orderCreated() {
+  Future<void> _orderCreated(dynamic data) async {
+    Hive.deleteBoxFromDisk('basket');
     basket.clear();
     paymentMethod = 0;
     BlocProvider.of<AppErrorBloc>(tools.context())

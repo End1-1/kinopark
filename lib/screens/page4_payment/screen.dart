@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kinopark/screens/page0_base/screen.dart';
 import 'package:kinopark/structs/payment_type.dart';
 import 'package:kinopark/styles/style_part1.dart';
 import 'package:kinopark/styles/styles.dart';
+import 'package:kinopark/tools/app_bloc.dart';
 import 'package:kinopark/tools/localilzator.dart';
 import 'package:kinopark/tools/tools.dart';
 
@@ -18,9 +20,13 @@ class Payment extends App {
 
   @override
   Widget body(BuildContext context) {
-    return SingleChildScrollView(
-        child:
-            Column(children: [_payments(), _additionalInfo(), _orderButton(), rowSpace()]));
+    return  SingleChildScrollView(
+            child: Column(children: [
+          _payments(),
+          _additionalInfo(),
+          _orderButton(),
+          rowSpace()
+        ]));
   }
 
   Widget _payments() {
@@ -111,21 +117,17 @@ class Payment extends App {
   Widget _orderButton() {
     return Container(
         margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-                          backgroundColor: kMainColor),
-                      onPressed: _order,
-                      child: Text(
-                          '${locale().order}  ${tools.mdFormatDouble(model.basketTotal())} ֏',
-                          style:
-                          const TextStyle(color: Colors.white))))
-            ]));
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Expanded(
+              child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      backgroundColor: kMainColor),
+                  onPressed: _order,
+                  child: Text(
+                      '${locale().order}  ${tools.mdFormatDouble(model.basketTotal())} ֏',
+                      style: const TextStyle(color: Colors.white))))
+        ]));
   }
-
-
 }

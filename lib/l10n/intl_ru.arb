@@ -35,5 +35,6 @@
   "goToPayment": "Перейти к оплате",
   "searchResult": "Результаты поиска",
   "goto": "Перейти",
-  "noPermissionForThisAction": "Невозможно выполнить команду"
+  "noPermissionForThisAction": "Невозможно выполнить команду",
+  "accessDenied": "Доступ запрещён"
 }

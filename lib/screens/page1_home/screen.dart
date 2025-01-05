@@ -68,7 +68,7 @@ class HomePage extends App {
                 ),
                 title: Text(localeName()),
                 onTap: () {
-                  Navigator.pop(context);  // Закрыть меню
+                  Navigator.pop(context);
                   showMenu(
                     context: context,
                     position: const RelativeRect.fromLTRB(100, 100, 0, 0),
