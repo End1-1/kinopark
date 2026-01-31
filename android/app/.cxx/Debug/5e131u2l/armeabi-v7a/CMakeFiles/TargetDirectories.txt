@@ -1,0 +1,2 @@
+C:/projects/kinopark/android/app/.cxx/Debug/5e131u2l/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/projects/kinopark/android/app/.cxx/Debug/5e131u2l/armeabi-v7a/CMakeFiles/rebuild_cache.dir

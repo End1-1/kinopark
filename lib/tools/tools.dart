@@ -9,6 +9,7 @@ final mdDoubleFormatter = NumberFormat.decimalPattern('en_us');
 
 extension Tools on SharedPreferences {
   static String locale = 'hy';
+  static String app_version = '';
 
   String serverName() {
     return dotenv.env['host'] ?? '';

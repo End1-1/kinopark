@@ -3,7 +3,7 @@ description: "A project for Kinopark VIP cinema"
 
 publish_to: 'none'
 
-version: 1.0.1+17
+version: 1.0.1+20
 
 environment:
   sdk: ^3.5.4
@@ -56,3 +56,4 @@ flutter:
     - assets/flags/
     - .env.dev
     - .env.devcommon
+    - .env.alikcirk

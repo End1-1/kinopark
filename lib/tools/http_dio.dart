@@ -16,6 +16,7 @@ class HttpDio {
       inData.addAll({'sessionkey': tools.getString('sessionkey')});
     }
     inData['sessionid'] = 1;
+    inData['app'] = 'site';
     try {
       var host = '${tools.serverName()}/engine/$route';
       if (kDebugMode) {

@@ -10,6 +10,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kinopark/screens/page0_base/model.dart';
 import 'package:kinopark/screens/page1_home/screen.dart';
+import 'package:kinopark/screens/page2_part2/screen.dart';
 import 'package:kinopark/structs/dish.dart';
 import 'package:kinopark/structs/dishpart1.dart';
 import 'package:kinopark/structs/dishpart2.dart';
@@ -27,6 +28,15 @@ void main() async {
   //debugPaintPointersEnabled = true;
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  final packageInfo = await PackageInfo.fromPlatform();
+  String appName = packageInfo.appName;
+  //String packageName = packageInfo.packageName;
+  String version = packageInfo.version;
+  String buildNumber = packageInfo.buildNumber;
+  Tools.app_version = '$version.$buildNumber';
+  print('APPVERSION ${Tools.app_version}');
+
   const String env = String.fromEnvironment('ENV');
   print('used env: $env');
   await dotenv.load(fileName: '.env.$env');
@@ -82,11 +92,7 @@ class KinoparkApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('hy'),
-            Locale('ru')
-          ],
+          supportedLocales: const [Locale('en'), Locale('hy'), Locale('ru')],
           home: AppPage());
     });
   }
@@ -127,9 +133,7 @@ class _AppPage extends State<AppPage> {
                     return _authWidget();
                   } else {
                     tools.setString('sessionkey', '');
-                    setState(() {
-
-                    });
+                    setState(() {});
                   }
                 }
                 return _errorWidget(snapshot.error.toString());
@@ -140,12 +144,22 @@ class _AppPage extends State<AppPage> {
                   return _authWidget();
                 }
               }
-              Future.microtask(() {
-                Navigator.pushReplacement(
-                    tools.context(),
-                    MaterialPageRoute(
-                        builder: (builder) => HomePage(widget.model)));
-              });
+              if (dotenv.env['skip_part1'] == 'true') {
+                Future.microtask(() {
+                  Navigator.pushReplacement(
+                      tools.context(),
+                      MaterialPageRoute(
+                          builder: (builder) => Part2(part1: int.tryParse(dotenv.env['initial_part1'] ?? '1') ?? 1, widget.model)));
+                });
+              } else {
+                Future.microtask(() {
+                  Navigator.pushReplacement(
+                      tools.context(),
+                      MaterialPageRoute(
+                          builder: (builder) => HomePage(widget.model)));
+                });
+              }
+
               return Container();
             }));
   }
@@ -192,23 +206,19 @@ class _AppPage extends State<AppPage> {
     if (tools.getString('sessionkey') == null) {
       tools.setString('sessionkey', '');
     }
-    final packageInfo = await PackageInfo.fromPlatform();
     if (kDebugMode) {
-      print('width of screen ${MediaQuery
-          .sizeOf(tools.context())
-          .width}');
+      print('width of screen ${MediaQuery.sizeOf(tools.context()).width}');
     }
-    String appName = packageInfo.appName;
-    //String packageName = packageInfo.packageName;
-    String version = packageInfo.version;
-    String buildNumber = packageInfo.buildNumber;
-    tools.setString('app_version', '$version.$buildNumber');
+
+    tools.setString('app_version', Tools.app_version);
     widget.model.init();
-    if (tools.getString('sessionkey')!.isEmpty && dotenv.env['startasguest'] != 'true') {
+    if (tools.getString('sessionkey')!.isEmpty &&
+        dotenv.env['startasguest'] != 'true') {
       return Future.value({'needauth': true});
     }
     dynamic r1;
-    if (dotenv.env['startasguest'] == 'true' && tools.getString('sessionkey')!.isEmpty) {
+    if (dotenv.env['startasguest'] == 'true' &&
+        tools.getString('sessionkey')!.isEmpty) {
       r1 = await HttpDio().post('login.php', inData: {'method': 4});
       r1 = r1['data'];
       tools.setString('sessionkey', r1['sessionkey']);
@@ -262,8 +272,12 @@ class _AppPage extends State<AppPage> {
       boxPart2.close();
       widget.model.dishes.list.clear();
       for (final e in r2['menu']) {
-        final dish = Dish.fromJson(e);
-        widget.model.dishes.list.add(dish);
+        try {
+          final dish = Dish.fromJson(e);
+          widget.model.dishes.list.add(dish);
+        } catch (ex) {
+          print(ex);
+        }
       }
       final boxDishes = await Hive.openBox<List>('dish');
       await boxDishes.put('dish', widget.model.dishes.list);
@@ -297,9 +311,12 @@ class _AppPage extends State<AppPage> {
         boxDishes.close();
         boxRecent.close();
       } catch (e) {
-        final directory = await getApplicationSupportDirectory();
-        final hiveDir = Directory(directory.path);
-        await hiveDir.delete(recursive: true);
+        if (kIsWeb) {
+        } else {
+          final directory = await getApplicationSupportDirectory();
+          final hiveDir = Directory(directory.path);
+          await hiveDir.delete(recursive: true);
+        }
         tools.setInt('menuversion', -1);
         return await _loadApp();
       }
